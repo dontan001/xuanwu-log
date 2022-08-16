@@ -1,0 +1,23 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: log-api
+  labels:
+    app: log
+    component: api
+spec:
+  selector:
+    matchLabels:
+      app: log
+      component: api
+  template:
+    metadata:
+      labels:
+        app: log
+        component: api
+    spec:
+      containers:
+        - image: dontan001/xuanwu-log:latest
+          imagePullPolicy: Always
+          name: api
