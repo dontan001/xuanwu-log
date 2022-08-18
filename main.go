@@ -20,7 +20,37 @@ func main() {
 }
 
 func start() {
+	http.HandleFunc("/log/big", func(w http.ResponseWriter, req *http.Request) {
+		defer util.TimeMeasure("download")()
+
+		fileName := req.URL.Query().Get("file")
+		fileNameFull := fmt.Sprintf("/Users/dongge.tan/Dev/workspace/GOPATH/github.com/Kyligence/xuanwu-log/test/%s", fileName)
+		w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", fileName))
+		http.ServeFile(w, req, fileNameFull)
+		log.Printf("Served File %s\n", fileName)
+	})
+
+	// io.Pipe
+	http.HandleFunc("/log/pipe", func(w http.ResponseWriter, req *http.Request) {
+	})
+
+	// transfer chunk
+	http.HandleFunc("/log/chunk", func(w http.ResponseWriter, req *http.Request) {
+		flusher, ok := w.(http.Flusher)
+		if !ok {
+			panic("expected http.ResponseWriter to be an http.Flusher")
+		}
+		w.Header().Set("X-Content-Type-Options", "nosniff")
+		for i := 1; i <= 10; i++ {
+			fmt.Fprintf(w, "Chunk #%d\n", i)
+			flusher.Flush() // Trigger "chunked" encoding and send a chunk...
+			time.Sleep(500 * time.Millisecond)
+		}
+	})
+
 	http.HandleFunc("/log", func(w http.ResponseWriter, req *http.Request) {
+		defer util.TimeMeasure("download")()
+
 		qry := req.URL.Query().Get("query")
 		start := req.URL.Query().Get("start")
 		end := req.URL.Query().Get("end")

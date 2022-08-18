@@ -2,6 +2,7 @@ package util
 
 import (
 	"fmt"
+	"log"
 	"regexp"
 	"time"
 )
@@ -38,4 +39,11 @@ func ParseTime(timeStr string) (time.Time, error) {
 	}
 
 	return time.Now().Add(duration), nil
+}
+
+func TimeMeasure(desc string) func() {
+	start := time.Now()
+	return func() {
+		log.Printf("%v took %v", desc, time.Since(start))
+	}
 }
