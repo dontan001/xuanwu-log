@@ -25,6 +25,7 @@ func start() {
 
 		fileName := req.URL.Query().Get("file")
 		fileNameFull := fmt.Sprintf("/Users/dongge.tan/Dev/workspace/GOPATH/github.com/Kyligence/xuanwu-log/test/%s", fileName)
+		// fileNameFull := fmt.Sprintf("/app/test/%s", fileName)
 		w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", fileName))
 		http.ServeFile(w, req, fileNameFull)
 		log.Printf("Served File %s\n", fileName)
