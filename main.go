@@ -65,6 +65,9 @@ func start() {
 			startParsed.Format(time.RFC3339Nano), endParsed.Format(time.RFC3339Nano))
 		log.Printf("parsed: query=%s, start=%d, end=%d", qry, startParsed.UnixNano(), endParsed.UnixNano())
 
+		result := &bytes.Buffer{}
+		query.Query(qry, startParsed, endParsed, result)
+
 		buf := new(bytes.Buffer)
 		writer := zip.NewWriter(buf)
 		filename := "logs.all"
@@ -72,11 +75,7 @@ func start() {
 		if err != nil {
 			log.Fatal(err)
 		}
-
-		/*data := "1234567890"
-		_, err = f.Write([]byte(data))*/
-		result := &bytes.Buffer{}
-		query.Query(qry, startParsed, endParsed, result)
+		
 		_, err = f.Write(result.Bytes())
 		if err != nil {
 			log.Fatal(err)
