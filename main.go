@@ -62,7 +62,8 @@ func start() {
 			log.Fatalf("time normalization err: %s", e)
 		}
 		log.Printf("parsed: query=%s, start=%s, end=%s", qry,
-			startParsed.Format(time.RFC3339), endParsed.Format(time.RFC3339))
+			startParsed.Format(time.RFC3339Nano), endParsed.Format(time.RFC3339Nano))
+		log.Printf("parsed: query=%s, start=%d, end=%d", qry, startParsed.UnixNano(), endParsed.UnixNano())
 
 		buf := new(bytes.Buffer)
 		writer := zip.NewWriter(buf)
