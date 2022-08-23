@@ -28,7 +28,6 @@ func start() {
 		// fileNameFull := fmt.Sprintf("/app/test/%s", fileName)
 		w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", fileName))
 		http.ServeFile(w, req, fileNameFull)
-		log.Printf("Served File %s\n", fileName)
 	})
 
 	// io.Pipe
@@ -128,7 +127,6 @@ func start() {
 		w.Header().Set("Content-Type", "application/zip")
 		w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", fileNameZip))
 		http.ServeFile(w, req, fileNameZipFull)
-		log.Printf("Served File %s\n", fileName)
 	})
 
 	http.ListenAndServe(":8080", nil)
