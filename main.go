@@ -75,7 +75,6 @@ func start() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		
 		_, err = f.Write(result.Bytes())
 		if err != nil {
 			log.Fatal(err)
