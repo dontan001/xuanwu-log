@@ -107,14 +107,22 @@ func start() {
 			startParsed.Format(time.RFC3339Nano), endParsed.Format(time.RFC3339Nano))
 		log.Printf("parsed: query=%s, start=%d, end=%d", qry, startParsed.UnixNano(), endParsed.UnixNano())
 
-		result, e := os.Create("/Users/dongge.tan/Dev/workspace/GOPATH/github.com/Kyligence/xuanwu-log/test/tmp.txt")
+		fileName := "tmp.txt"
+		fileNameFull := fmt.Sprintf("/Users/dongge.tan/Dev/workspace/GOPATH/github.com/Kyligence/xuanwu-log/test/%s", fileName)
+		result, e := os.Create(fileNameFull)
 		if e != nil {
 			log.Fatal(e)
 		}
-		defer result.Close()
+		defer func() {
+			log.Printf("Clean up\n")
+			result.Close()
+			os.Remove(fileNameFull)
+		}()
 		query.Query(qry, startParsed, endParsed, result)
 
-		w.Write([]byte("done"))
+		w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", fileName))
+		http.ServeFile(w, req, fileNameFull)
+		log.Printf("Served File %s\n", fileName)
 	})
 
 	http.ListenAndServe(":8080", nil)
