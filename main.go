@@ -90,5 +90,31 @@ func start() {
 		w.Write(buf.Bytes())
 	})
 
+	http.HandleFunc("/log/v2", func(w http.ResponseWriter, req *http.Request) {
+		defer util.TimeMeasure("download")()
+
+		qry := req.URL.Query().Get("query")
+		start := req.URL.Query().Get("start")
+		end := req.URL.Query().Get("end")
+		log.Printf("input: query=%s, start=%s, end=%s \n", qry, start, end)
+
+		startParsed, endParsed, e := util.NormalizeTimes(start, end)
+		if e != nil {
+			log.Fatalf("time normalization err: %s", e)
+		}
+		log.Printf("parsed: query=%s, start=%s, end=%s", qry,
+			startParsed.Format(time.RFC3339Nano), endParsed.Format(time.RFC3339Nano))
+		log.Printf("parsed: query=%s, start=%d, end=%d", qry, startParsed.UnixNano(), endParsed.UnixNano())
+
+		result, e := os.Create("/Users/dongge.tan/Dev/workspace/GOPATH/github.com/Kyligence/xuanwu-log/test/tmp.txt")
+		if e != nil {
+			log.Fatal(e)
+		}
+		defer result.Close()
+		query.Query(qry, startParsed, endParsed, result)
+
+		w.Write([]byte("done"))
+	})
+
 	http.ListenAndServe(":8080", nil)
 }
