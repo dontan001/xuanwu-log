@@ -60,9 +60,8 @@ func start() {
 		if e != nil {
 			log.Fatalf("time normalization err: %s", e)
 		}
-		log.Printf("parsed: query=%s, start=%s, end=%s", qry,
-			startParsed.Format(time.RFC3339Nano), endParsed.Format(time.RFC3339Nano))
-		log.Printf("parsed: query=%s, start=%d, end=%d", qry, startParsed.UnixNano(), endParsed.UnixNano())
+		log.Printf("parsed: query=%s, start=%s [ %d ], end=%s [ %d ]", qry,
+			startParsed.Format(time.RFC3339Nano), startParsed.UnixNano(), endParsed.Format(time.RFC3339Nano), endParsed.UnixNano())
 
 		result := &bytes.Buffer{}
 		query.Query(qry, startParsed, endParsed, result)
@@ -100,9 +99,8 @@ func start() {
 		if e != nil {
 			log.Fatalf("time normalization err: %s", e)
 		}
-		log.Printf("parsed: query=%s, start=%s, end=%s", qry,
-			startParsed.Format(time.RFC3339Nano), endParsed.Format(time.RFC3339Nano))
-		log.Printf("parsed: query=%s, start=%d, end=%d", qry, startParsed.UnixNano(), endParsed.UnixNano())
+		log.Printf("parsed: query=%s, start=%s [ %d ], end=%s [ %d ]", qry,
+			startParsed.Format(time.RFC3339Nano), startParsed.UnixNano(), endParsed.Format(time.RFC3339Nano), endParsed.UnixNano())
 
 		fileName := "tmp.txt"
 		fileNameZip := fmt.Sprintf("%s.zip", fileName)
