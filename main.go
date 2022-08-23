@@ -106,7 +106,9 @@ func start() {
 		log.Printf("parsed: query=%s, start=%d, end=%d", qry, startParsed.UnixNano(), endParsed.UnixNano())
 
 		fileName := "tmp.txt"
+		fileNameZip := fmt.Sprintf("%s.zip", fileName)
 		fileNameFull := fmt.Sprintf("/Users/dongge.tan/Dev/workspace/GOPATH/github.com/Kyligence/xuanwu-log/test/%s", fileName)
+		fileNameZipFull := fmt.Sprintf("/Users/dongge.tan/Dev/workspace/GOPATH/github.com/Kyligence/xuanwu-log/test/%s", fileNameZip)
 		result, e := os.Create(fileNameFull)
 		if e != nil {
 			log.Fatal(e)
@@ -115,11 +117,17 @@ func start() {
 			log.Printf("Clean up\n")
 			result.Close()
 			os.Remove(fileNameFull)
+			os.Remove(fileNameZipFull)
 		}()
 		query.Query(qry, startParsed, endParsed, result)
 
-		w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", fileName))
-		http.ServeFile(w, req, fileNameFull)
+		if e := util.ZipSource(fileNameFull, fileNameZipFull); e != nil {
+			log.Fatal(e)
+		}
+
+		w.Header().Set("Content-Type", "application/zip")
+		w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", fileNameZip))
+		http.ServeFile(w, req, fileNameZipFull)
 		log.Printf("Served File %s\n", fileName)
 	})
 

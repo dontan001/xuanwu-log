@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"regexp"
+	"strconv"
 	"time"
 )
 
@@ -22,6 +23,11 @@ func NormalizeTimes(start, end string) (time.Time, time.Time, error) {
 }
 
 func ParseTime(timeStr string) (time.Time, error) {
+	v, err := strconv.ParseInt(timeStr, 10, 64)
+	if err == nil {
+		return time.Unix(0, v), nil
+	}
+
 	re, _ := regexp.Compile("^(now)([+-]\\d.*)?$")
 	match := re.MatchString(timeStr)
 	if !match {

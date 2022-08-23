@@ -1,6 +1,7 @@
 package query
 
 import (
+	"github.com/kyligence/xuanwu-log/pkg/util"
 	"io"
 	"log"
 	"math"
@@ -20,6 +21,8 @@ var (
 )
 
 func Query(q string, start, end time.Time, result io.Writer) {
+	defer util.TimeMeasure("query")()
+
 	rangeQuery := newQuery(q, start, end)
 	outputOptions := &output.LogOutputOptions{
 		Timezone:      time.Local,

@@ -5,12 +5,21 @@ import (
 	"time"
 )
 
+func TestParseTimeUnixNano(t *testing.T) {
+	timeParsed, e := ParseTime("1661203728487614000")
+	if e != nil {
+		t.Fatalf("%s", e)
+	}
+	t.Logf("%d", timeParsed.UnixNano())
+	t.Logf("%s", timeParsed.Format(time.RFC3339Nano))
+}
+
 func TestParseTimeExpression(t *testing.T) {
 	timeParsed, e := ParseTime("now+1h")
 	if e != nil {
 		t.Fatalf("%s", e)
 	}
-	t.Logf("%s", timeParsed.Format(time.RFC3339))
+	t.Logf("%s", timeParsed.Format(time.RFC3339Nano))
 }
 
 func TestParseTimeNow(t *testing.T) {
@@ -18,7 +27,7 @@ func TestParseTimeNow(t *testing.T) {
 	if e != nil {
 		t.Fatalf("%s", e)
 	}
-	t.Logf("%s", timeParsed.Format(time.RFC3339))
+	t.Logf("%s", timeParsed.Format(time.RFC3339Nano))
 }
 
 func TestParseTimeFormat(t *testing.T) {
