@@ -1,24 +1,30 @@
 package util
 
 import (
+	"fmt"
 	"testing"
-	"time"
+)
+
+var (
+	dir = "/Users/dongge.tan/Dev/workspace/GOPATH/github.com/Kyligence/xuanwu-log/%s"
 )
 
 func TestZipSource(t *testing.T) {
-	fs := "/Users/dongge.tan/Dev/workspace/GOPATH/github.com/Kyligence/xuanwu-log/pkg/util/zip.go"
-	ft := "/Users/dongge.tan/Dev/workspace/GOPATH/github.com/Kyligence/xuanwu-log/pkg/util/zip.go.zip"
+	fs := fmt.Sprintf(dir, "pkg/util/zip.go")
+	ft := fmt.Sprintf(dir, "pkg/util/zip.go.zip")
+
 	if err := ZipSource(fs, ft); err != nil {
 		t.Fatal(err)
 	}
 }
 
 func TestZipSourceBig(t *testing.T) {
-	start := time.Now()
-	fs := "/Users/dongge.tan/Dev/workspace/GOPATH/github.com/Kyligence/xuanwu-log/test/test50g.txt"
-	ft := "/Users/dongge.tan/Dev/workspace/GOPATH/github.com/Kyligence/xuanwu-log/test/test50g.txt.zip"
+	defer TimeMeasure("zip")()
+
+	fs := fmt.Sprintf(dir, "test/test50g.txt")
+	ft := fmt.Sprintf(dir, "test/test50g.txt.zip")
+
 	if err := ZipSource(fs, ft); err != nil {
 		t.Fatal(err)
 	}
-	t.Logf("elapsed %f seconds", time.Since(start).Seconds())
 }
