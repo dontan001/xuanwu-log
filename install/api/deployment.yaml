@@ -18,7 +18,7 @@ spec:
         component: api
     spec:
       containers:
-        - image: dontan001/xuanwu-log:latest
+        - image: dontan001/xuanwu-log:api
           imagePullPolicy: Always
           name: api
           resources:
