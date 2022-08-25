@@ -8,7 +8,8 @@ import (
 
 	"github.com/grafana/loki/pkg/logcli/output"
 	"github.com/grafana/loki/pkg/logcli/query"
-	"github.com/kyligence/xuanwu-log/pkg/loki/client"
+
+	"github.com/kyligence/xuanwu-log/pkg/log/loki/client"
 	"github.com/kyligence/xuanwu-log/pkg/util"
 )
 

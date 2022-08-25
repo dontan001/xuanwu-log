@@ -9,7 +9,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/kyligence/xuanwu-log/pkg/loki/query"
+	"github.com/kyligence/xuanwu-log/pkg/log/loki/query"
 	"github.com/kyligence/xuanwu-log/pkg/util"
 )
 
