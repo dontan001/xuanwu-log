@@ -2,6 +2,6 @@
 FROM golang:1.17-alpine
 
 WORKDIR /app
-COPY bin/xuanwu-api xuanwu-api
+COPY bin/xuanwu-backup xuanwu-backup
 
-CMD [ "/app/xuanwu-api" ]
+CMD [ "/app/xuanwu-backup" ]
