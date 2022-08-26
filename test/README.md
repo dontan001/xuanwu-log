@@ -14,8 +14,8 @@ curl 'http://localhost:8080/log?query=\{job="fluent-bit",app="yinglong"\}&start=
 
 ```
 ```browser
-http://localhost:8080/log?query={job="fluent-bit",app="yinglong"}&start=now-6h&end=now
-http://localhost:8080/log/v2?query={job="fluent-bit",app="yinglong"}&start=now-6h&end=now
 http://localhost:8080/log/big?file=test1g.txt
+http://localhost:8080/log?query={job="fluent-bit",app="yinglong"}&start=now-6h&end=now
+http://localhost:8080/log/download?query={job="fluent-bit",app="yinglong"}&start=now-6h&end=now
 
 ```

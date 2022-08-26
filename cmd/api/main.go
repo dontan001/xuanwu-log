@@ -13,6 +13,10 @@ import (
 	"github.com/kyligence/xuanwu-log/pkg/util"
 )
 
+const (
+	BASE = "/Users/dongge.tan/Dev/workspace/GOPATH/github.com/Kyligence/xuanwu-log/test/%s"
+)
+
 func main() {
 	log.SetOutput(os.Stderr)
 
@@ -24,8 +28,7 @@ func start() {
 		defer util.TimeMeasure("download")()
 
 		fileName := req.URL.Query().Get("file")
-		base := "/Users/dongge.tan/Dev/workspace/GOPATH/github.com/Kyligence/xuanwu-log/test/%s"
-		fileNameFull := fmt.Sprintf(base, fileName)
+		fileNameFull := fmt.Sprintf(BASE, fileName)
 		// fileNameFull := fmt.Sprintf("/app/test/%s", fileName)
 		w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", fileName))
 		http.ServeFile(w, req, fileNameFull)
@@ -88,7 +91,7 @@ func start() {
 		w.Write(buf.Bytes())
 	})
 
-	http.HandleFunc("/log/v2", func(w http.ResponseWriter, req *http.Request) {
+	http.HandleFunc("/log/download", func(w http.ResponseWriter, req *http.Request) {
 		defer util.TimeMeasure("download")()
 
 		qry := req.URL.Query().Get("query")
@@ -103,11 +106,10 @@ func start() {
 		log.Printf("parsed: query=%s, start=%s [ %d ], end=%s [ %d ]", qry,
 			startParsed.Format(time.RFC3339Nano), startParsed.UnixNano(), endParsed.Format(time.RFC3339Nano), endParsed.UnixNano())
 
-		base := "/Users/dongge.tan/Dev/workspace/GOPATH/github.com/Kyligence/xuanwu-log/test/%s"
 		fileName := "tmp.txt"
 		fileNameZip := fmt.Sprintf("%s.zip", fileName)
-		fileNameFull := fmt.Sprintf(base, fileName)
-		fileNameZipFull := fmt.Sprintf(base, fileNameZip)
+		fileNameFull := fmt.Sprintf(BASE, fileName)
+		fileNameZipFull := fmt.Sprintf(BASE, fileNameZip)
 		result, e := os.Create(fileNameFull)
 		if e != nil {
 			log.Fatal(e)

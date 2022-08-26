@@ -1,20 +1,22 @@
 package schedule
 
-import "time"
-
-var (
-	interval = 6 * time.Hour
-	max      = 3 * 4 * 6 * time.Hour
+import (
+	"time"
 )
 
-type schedule struct {
+var (
+	intervalDefault = 6 * time.Hour
+	maxDefault      = 3 * 4 * 6 * time.Hour
+)
+
+type Schedule struct {
 	interval time.Duration
 	max      time.Duration
 }
 
-type queryConf struct {
+type QueryConf struct {
 	Query       string
-	Schedule    schedule
+	Schedule    Schedule
 	Prefix      string
 	NamePattern string
 }
