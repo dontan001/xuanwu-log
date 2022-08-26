@@ -3,29 +3,39 @@ package schedule
 import (
 	"log"
 	"time"
-)
 
-type QueryRequest struct {
-	Query string
-	Start time.Time
-	End   time.Time
-}
+	"github.com/kyligence/xuanwu-log/pkg/util"
+)
 
 func Run() {
 	queryConf := &QueryConf{
 		Query: "{job=\"fluent-bit\",app=\"yinglong\"}",
 		Schedule: Schedule{
-			interval: intervalDefault,
-			max:      maxDefault},
-		Prefix:      "hello",
+			Interval: DefaultInterval,
+			Max:      DefaultMax},
+		Prefix:      "test",
 		NamePattern: "log-%s",
 	}
 
 	requests := generateRequests(queryConf)
-	log.Printf("requests: %d", len(requests))
+	log.Printf("Requests total: %d", len(requests))
 }
 
-func generateRequests(conf *QueryConf) []QueryRequest {
+func generateRequests(conf *QueryConf) (requests []QueryRequest) {
+	t := time.Now()
+	log.Printf("Checked at: %s", t.Format(time.RFC3339Nano))
 
-	return nil
+	lastBackup := util.CalcLastBackup(conf.Schedule.Interval, t)
+	for idx := 1; idx <= conf.Schedule.Max; idx++ {
+		start := lastBackup.Add(-time.Duration(conf.Schedule.Interval) * time.Hour)
+		end := lastBackup.Add(-1 * time.Nanosecond)
+
+		requests = append(requests, QueryRequest{
+			Query: conf.Query,
+			Start: start,
+			End:   end,
+		})
+		lastBackup = start
+	}
+	return
 }

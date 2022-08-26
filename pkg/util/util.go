@@ -47,6 +47,18 @@ func ParseTime(timeStr string) (time.Time, error) {
 	return time.Now().Add(duration), nil
 }
 
+func CalcLastBackup(interval int, t time.Time) time.Time {
+	_, remainder := DivMod(t.Hour(), interval)
+	lastBackup := time.Date(t.Year(), t.Month(), t.Day(), t.Hour()-remainder, 0, 0, 0, t.Location())
+	return lastBackup
+}
+
+func DivMod(numerator, denominator int) (quotient, remainder int) {
+	quotient = numerator / denominator
+	remainder = numerator % denominator
+	return
+}
+
 func TimeMeasure(desc string) func() {
 	start := time.Now()
 	return func() {
