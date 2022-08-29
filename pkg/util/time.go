@@ -53,12 +53,6 @@ func CalcLastBackup(interval int, t time.Time) time.Time {
 	return lastBackup
 }
 
-func DivMod(numerator, denominator int) (quotient, remainder int) {
-	quotient = numerator / denominator
-	remainder = numerator % denominator
-	return
-}
-
 func TimeMeasure(desc string) func() {
 	start := time.Now()
 	return func() {
