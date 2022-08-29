@@ -11,7 +11,7 @@ var (
 		Schedule: Schedule{
 			Interval: DefaultInterval,
 			Max:      DefaultMax},
-		Prefix:      "test",
+		Prefix:      "",
 		NamePattern: "test-%s",
 	}
 )
