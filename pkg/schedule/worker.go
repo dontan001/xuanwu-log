@@ -4,14 +4,26 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
+	"time"
 
 	"github.com/kyligence/xuanwu-log/pkg/log/loki/query"
 	"github.com/kyligence/xuanwu-log/pkg/util"
 )
 
-func proceed(req BackupRequest) string {
-	log.Printf("proceed req: %s", req.String())
+type BackupRequest struct {
+	Query   string
+	Start   time.Time
+	End     time.Time
+	Archive Archive
+}
 
+type Archive struct {
+	// Prefix string
+	Name string
+}
+
+func (req BackupRequest) Do() string {
 	fileName := req.Archive.Name
 	fileNameZip := fmt.Sprintf("%s.zip", fileName)
 	fileNameFull := fmt.Sprintf(BASE, fileName)
@@ -34,4 +46,16 @@ func proceed(req BackupRequest) string {
 	}
 
 	return ""
+}
+
+func (req BackupRequest) String() string {
+	var b strings.Builder
+
+	b.WriteByte('{')
+	b.WriteString("query=" + req.Query + ",")
+	b.WriteString("start=" + req.Start.Format(time.RFC3339Nano) + ",")
+	b.WriteString("end=" + req.End.Format(time.RFC3339Nano))
+	b.WriteByte('}')
+
+	return b.String()
 }

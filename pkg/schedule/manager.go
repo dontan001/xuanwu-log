@@ -72,7 +72,9 @@ func submit(requests []BackupRequest) {
 				wg.Done()
 			}()
 
-			proceed(requests[i])
+			req := requests[i]
+			log.Printf("proceed req: %s", req.String())
+			req.Do()
 			realtime()
 		}(idx)
 	}
