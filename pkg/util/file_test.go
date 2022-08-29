@@ -10,8 +10,8 @@ const (
 )
 
 func TestZipSource(t *testing.T) {
-	fs := fmt.Sprintf(BASE, "pkg/util/zip.go")
-	ft := fmt.Sprintf(BASE, "pkg/util/zip.go.zip")
+	fs := fmt.Sprintf(BASE, "pkg/util/file.go")
+	ft := fmt.Sprintf(BASE, "pkg/util/file.go.zip")
 
 	if err := ZipSource(fs, ft); err != nil {
 		t.Fatal(err)

@@ -10,6 +10,7 @@ const (
 	DefaultMax      = 1 * 8
 
 	PARALLELIZE = 4
+	BASE        = "/Users/dongge.tan/Dev/workspace/GOPATH/github.com/Kyligence/xuanwu-log/test/backup/%s"
 )
 
 type QueryConf struct {
@@ -24,13 +25,19 @@ type Schedule struct {
 	Max      int
 }
 
-type QueryRequest struct {
-	Query string
-	Start time.Time
-	End   time.Time
+type BackupRequest struct {
+	Query   string
+	Start   time.Time
+	End     time.Time
+	Archive Archive
 }
 
-func (r *QueryRequest) String() string {
+type Archive struct {
+	// Prefix string
+	Name string
+}
+
+func (r *BackupRequest) String() string {
 	var b strings.Builder
 
 	b.WriteByte('{')

@@ -1,6 +1,7 @@
 package schedule
 
 import (
+	"fmt"
 	"log"
 	"runtime"
 	"sync"
@@ -15,8 +16,8 @@ func Run() {
 		Schedule: Schedule{
 			Interval: DefaultInterval,
 			Max:      DefaultMax},
-		Prefix:      "test",
-		NamePattern: "log-%s",
+		Prefix:      "",
+		NamePattern: "log.%s.%s",
 	}
 
 	requests := generateRequests(queryConf)
@@ -25,7 +26,7 @@ func Run() {
 	submit(requests)
 }
 
-func generateRequests(conf *QueryConf) (requests []QueryRequest) {
+func generateRequests(conf *QueryConf) (requests []BackupRequest) {
 	t := time.Now()
 	log.Printf("Checked at: %s", t.Format(time.RFC3339Nano))
 
@@ -34,17 +35,26 @@ func generateRequests(conf *QueryConf) (requests []QueryRequest) {
 		start := lastBackup.Add(-time.Duration(conf.Schedule.Interval) * time.Hour)
 		end := lastBackup.Add(-1 * time.Nanosecond)
 
-		requests = append(requests, QueryRequest{
+		prefix := conf.Prefix
+		if prefix == "" {
+			prefix = fmt.Sprintf("%d", util.Hash(conf.Query))
+		}
+		archiveName := fmt.Sprintf(conf.NamePattern, prefix, lastBackup.Format(time.RFC3339))
+
+		requests = append(requests, BackupRequest{
 			Query: conf.Query,
 			Start: start,
 			End:   end,
+			Archive: Archive{
+				Name: archiveName,
+			},
 		})
 		lastBackup = start
 	}
 	return
 }
 
-func submit(requests []QueryRequest) {
+func submit(requests []BackupRequest) {
 	var wg sync.WaitGroup
 	ch := make(chan struct{}, PARALLELIZE)
 	realtime()
