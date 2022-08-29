@@ -6,7 +6,7 @@ import (
 )
 
 var (
-	queryConf = &QueryConf{
+	testConf = &QueryConf{
 		Query: "{job=\"fluent-bit\",app=\"yinglong\"}",
 		Schedule: Schedule{
 			Interval: DefaultInterval,
@@ -17,7 +17,7 @@ var (
 )
 
 func TestGenerateRequests(t *testing.T) {
-	requests := generateRequests(queryConf)
+	requests := generateRequests(testConf)
 	log.Printf("total: %d", len(requests))
 	for idx, request := range requests {
 		log.Printf("Request #%d %s", idx+1, request.String())
@@ -25,6 +25,6 @@ func TestGenerateRequests(t *testing.T) {
 }
 
 func TestSubmit(t *testing.T) {
-	requests := generateRequests(queryConf)
+	requests := generateRequests(testConf)
 	submit(requests)
 }
