@@ -65,6 +65,9 @@ func submit(requests []BackupRequest) {
 
 		go func(i int) {
 			defer func() {
+				if r := recover(); r != nil {
+					log.Fatalf("Submit with err: %s", r)
+				}
 				<-ch
 				wg.Done()
 			}()
