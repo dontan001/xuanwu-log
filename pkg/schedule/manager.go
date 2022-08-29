@@ -2,6 +2,8 @@ package schedule
 
 import (
 	"log"
+	"runtime"
+	"sync"
 	"time"
 
 	"github.com/kyligence/xuanwu-log/pkg/util"
@@ -19,6 +21,8 @@ func Run() {
 
 	requests := generateRequests(queryConf)
 	log.Printf("Requests total: %d", len(requests))
+
+	submit(requests)
 }
 
 func generateRequests(conf *QueryConf) (requests []QueryRequest) {
@@ -38,4 +42,32 @@ func generateRequests(conf *QueryConf) (requests []QueryRequest) {
 		lastBackup = start
 	}
 	return
+}
+
+func submit(requests []QueryRequest) {
+	var wg sync.WaitGroup
+	ch := make(chan struct{}, PARALLELIZE)
+	realtime()
+
+	for idx := 0; idx < len(requests); idx++ {
+		ch <- struct{}{}
+		wg.Add(1)
+
+		go func(i int) {
+			defer func() {
+				<-ch
+				wg.Done()
+			}()
+
+			proceed(requests[i])
+			realtime()
+		}(idx)
+	}
+
+	wg.Wait()
+	realtime()
+}
+
+func realtime() {
+	log.Printf("Routines total: %d", runtime.NumGoroutine())
 }

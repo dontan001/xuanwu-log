@@ -8,6 +8,8 @@ import (
 const (
 	DefaultInterval = 3
 	DefaultMax      = 1 * 8
+
+	PARALLELIZE = 4
 )
 
 type QueryConf struct {

@@ -23,3 +23,8 @@ func TestGenerateRequests(t *testing.T) {
 		log.Printf("Request #%d %s", idx+1, request.String())
 	}
 }
+
+func TestSubmit(t *testing.T) {
+	requests := generateRequests(queryConf)
+	submit(requests)
+}
