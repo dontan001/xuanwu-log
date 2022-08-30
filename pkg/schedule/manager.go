@@ -73,7 +73,6 @@ func submit(requests []BackupRequest) {
 			}()
 
 			req := requests[i]
-			log.Printf("proceed req: %s", req.String())
 			req.Do()
 			realtime()
 		}(idx)
@@ -84,5 +83,9 @@ func submit(requests []BackupRequest) {
 }
 
 func realtime() {
+	if !trace {
+		return
+	}
+
 	log.Printf("Routines total: %d", runtime.NumGoroutine())
 }

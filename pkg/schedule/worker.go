@@ -24,6 +24,8 @@ type Archive struct {
 }
 
 func (req BackupRequest) Do() string {
+	log.Printf("Proceed req: %s", req.String())
+
 	fileName := req.Archive.Name
 	fileNameZip := fmt.Sprintf("%s.zip", fileName)
 	fileNameFull := fmt.Sprintf(BASE, fileName)
@@ -36,8 +38,10 @@ func (req BackupRequest) Do() string {
 	defer func() {
 		log.Printf("Clean up\n")
 		result.Close()
-		os.Remove(fileNameFull)
-		os.Remove(fileNameZipFull)
+		if !trace {
+			os.Remove(fileNameFull)
+			os.Remove(fileNameZipFull)
+		}
 	}()
 	query.Query(req.Query, req.Start, req.End, result)
 
@@ -54,7 +58,9 @@ func (req BackupRequest) String() string {
 	b.WriteByte('{')
 	b.WriteString("query=" + req.Query + ",")
 	b.WriteString("start=" + req.Start.Format(time.RFC3339Nano) + ",")
-	b.WriteString("end=" + req.End.Format(time.RFC3339Nano))
+	b.WriteString("startUnix=" + fmt.Sprintf("%d", req.Start.UnixNano()) + ",")
+	b.WriteString("end=" + req.End.Format(time.RFC3339Nano) + ",")
+	b.WriteString("endUnix=" + fmt.Sprintf("%d", req.End.UnixNano()))
 	b.WriteByte('}')
 
 	return b.String()

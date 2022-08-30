@@ -6,6 +6,8 @@ const (
 
 	PARALLELIZE = 4
 	BASE        = "/Users/dongge.tan/Dev/workspace/GOPATH/github.com/Kyligence/xuanwu-log/test/backup/%s"
+
+	trace = false
 )
 
 type QueryConf struct {
