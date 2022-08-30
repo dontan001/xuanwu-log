@@ -73,7 +73,11 @@ func submit(requests []BackupRequest) {
 			}()
 
 			req := requests[i]
-			req.Do()
+			err := req.Do()
+			if err != nil {
+				log.Printf("Request proceed err: %s", err)
+				log.Printf("Retry next time...")
+			}
 			realtime()
 		}(idx)
 	}

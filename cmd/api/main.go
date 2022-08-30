@@ -68,7 +68,10 @@ func start() {
 			startParsed.Format(time.RFC3339Nano), startParsed.UnixNano(), endParsed.Format(time.RFC3339Nano), endParsed.UnixNano())
 
 		result := &bytes.Buffer{}
-		query.QueryV2(qry, startParsed, endParsed, result)
+		err := query.QueryV2(qry, startParsed, endParsed, result)
+		if err != nil {
+			log.Fatal(err)
+		}
 
 		buf := new(bytes.Buffer)
 		writer := zip.NewWriter(buf)
@@ -99,9 +102,9 @@ func start() {
 		end := req.URL.Query().Get("end")
 		log.Printf("input: query=%s, start=%s, end=%s \n", qry, start, end)
 
-		startParsed, endParsed, e := util.NormalizeTimes(start, end)
-		if e != nil {
-			log.Fatalf("time normalization err: %s", e)
+		startParsed, endParsed, err := util.NormalizeTimes(start, end)
+		if err != nil {
+			log.Fatalf("time normalization err: %s", err)
 		}
 		log.Printf("parsed: query=%s, start=%s [ %d ], end=%s [ %d ]", qry,
 			startParsed.Format(time.RFC3339Nano), startParsed.UnixNano(), endParsed.Format(time.RFC3339Nano), endParsed.UnixNano())
@@ -110,20 +113,22 @@ func start() {
 		fileNameZip := fmt.Sprintf("%s.zip", fileName)
 		fileNameFull := fmt.Sprintf(BASE, fileName)
 		fileNameZipFull := fmt.Sprintf(BASE, fileNameZip)
-		result, e := os.Create(fileNameFull)
-		if e != nil {
-			log.Fatal(e)
+		result, err := os.Create(fileNameFull)
+		if err != nil {
+			log.Fatal(err)
 		}
 		defer func() {
-			log.Printf("Clean up\n")
 			result.Close()
 			os.Remove(fileNameFull)
 			os.Remove(fileNameZipFull)
 		}()
-		query.QueryV2(qry, startParsed, endParsed, result)
+		err = query.QueryV2(qry, startParsed, endParsed, result)
+		if err != nil {
+			log.Fatal(err)
+		}
 
-		if e := util.ZipSource(fileNameFull, fileNameZipFull); e != nil {
-			log.Fatal(e)
+		if err = util.ZipSource(fileNameFull, fileNameZipFull); err != nil {
+			log.Fatal(err)
 		}
 
 		w.Header().Set("Content-Type", "application/zip")

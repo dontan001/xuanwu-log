@@ -53,7 +53,7 @@ func newQuery(q string, start, end time.Time) *query.Query {
 }
 
 // QueryV2 v2
-func QueryV2(q string, start, end time.Time, result io.Writer) {
+func QueryV2(q string, start, end time.Time, result io.Writer) error {
 	defer util.TimeMeasure("queryV2")()
 
 	rangeQuery := newQueryV2(q, start, end)
@@ -65,10 +65,17 @@ func QueryV2(q string, start, end time.Time, result io.Writer) {
 
 	out, err := output.NewLogOutput(result, mode, outputOptions)
 	if err != nil {
-		log.Fatalf("Unable to create log output: %s", err)
+		log.Printf("Unable to create log output: %s", err)
+		return err
 	}
 
-	rangeQuery.DoQuery(queryClient, out, false)
+	err = rangeQuery.DoQuery(queryClient, out, false)
+	if err != nil {
+		log.Printf("DoQuery failed: %s", err)
+		return err
+	}
+
+	return nil
 }
 
 func newQueryV2(q string, start, end time.Time) *v2.Query {

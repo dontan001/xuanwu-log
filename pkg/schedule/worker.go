@@ -23,16 +23,16 @@ type Archive struct {
 	Name string
 }
 
-func (req BackupRequest) Do() string {
+func (req BackupRequest) Do() error {
 	log.Printf("Proceed req: %s", req.String())
 
 	fileName := req.Archive.Name
 	fileNameZip := fmt.Sprintf("%s.zip", fileName)
 	fileNameFull := fmt.Sprintf(BASE, fileName)
 	fileNameZipFull := fmt.Sprintf(BASE, fileNameZip)
-	result, e := os.Create(fileNameFull)
-	if e != nil {
-		log.Fatal(e)
+	result, err := os.Create(fileNameFull)
+	if err != nil {
+		return err
 	}
 
 	defer func() {
@@ -42,13 +42,17 @@ func (req BackupRequest) Do() string {
 			os.Remove(fileNameZipFull)
 		}
 	}()
-	query.QueryV2(req.Query, req.Start, req.End, result)
-
-	if e := util.ZipSource(fileNameFull, fileNameZipFull); e != nil {
-		log.Fatal(e)
+	err = query.QueryV2(req.Query, req.Start, req.End, result)
+	if err != nil {
+		return err
 	}
 
-	return ""
+	err = util.ZipSource(fileNameFull, fileNameZipFull)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (req BackupRequest) String() string {

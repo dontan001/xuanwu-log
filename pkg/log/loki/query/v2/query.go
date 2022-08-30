@@ -28,7 +28,7 @@ type streamEntryPair struct {
 	labels loghttp.LabelSet
 }
 
-func (q Query) DoQuery(c client.Client, out output.LogOutput, statistics bool) {
+func (q Query) DoQuery(c client.Client, out output.LogOutput, statistics bool) error {
 	d := q.resultsDirection()
 
 	if q.Limit < q.BatchSize {
@@ -51,7 +51,9 @@ func (q Query) DoQuery(c client.Client, out output.LogOutput, statistics bool) {
 		}
 		resp, err := c.QueryRange(q.QueryString, bs, start, end, d, q.Step, q.Interval, q.Quiet)
 		if err != nil {
-			log.Fatalf("Query failed: %+v", err)
+			// log.Fatalf("Query failed: %+v", err)
+			err := fmt.Errorf("QueryRange failed: %+v", err)
+			return err
 		}
 
 		if statistics {
@@ -72,11 +74,12 @@ func (q Query) DoQuery(c client.Client, out output.LogOutput, statistics bool) {
 			break
 		}
 		if len(lastEntry) >= q.BatchSize {
-			log.Fatalf("Invalid batch size %v, the next query will have %v overlapping entries "+
+			err := fmt.Errorf("Invalid batch size %v, the next query will have %v overlapping entries "+
 				"(there will always be 1 overlapping entry but Loki allows multiple entries to have "+
 				"the same timestamp, so when a batch ends in this scenario the next query will include "+
 				"all the overlapping entries again).  Please increase your batch size to at least %v to account "+
 				"for overlapping entryes\n", q.BatchSize, len(lastEntry), len(lastEntry)+1)
+			return err
 		}
 
 		// Batching works by taking the timestamp of the last query and using it in the next query,
@@ -98,6 +101,8 @@ func (q Query) DoQuery(c client.Client, out output.LogOutput, statistics bool) {
 		}
 
 	}
+
+	return nil
 }
 
 func (q *Query) printResult(value loghttp.ResultValue, out output.LogOutput, lastEntry []*loghttp.Entry) (int, []*loghttp.Entry) {
