@@ -68,7 +68,7 @@ func start() {
 			startParsed.Format(time.RFC3339Nano), startParsed.UnixNano(), endParsed.Format(time.RFC3339Nano), endParsed.UnixNano())
 
 		result := &bytes.Buffer{}
-		query.Query(qry, startParsed, endParsed, result)
+		query.QueryV2(qry, startParsed, endParsed, result)
 
 		buf := new(bytes.Buffer)
 		writer := zip.NewWriter(buf)
@@ -120,7 +120,7 @@ func start() {
 			os.Remove(fileNameFull)
 			os.Remove(fileNameZipFull)
 		}()
-		query.Query(qry, startParsed, endParsed, result)
+		query.QueryV2(qry, startParsed, endParsed, result)
 
 		if e := util.ZipSource(fileNameFull, fileNameZipFull); e != nil {
 			log.Fatal(e)

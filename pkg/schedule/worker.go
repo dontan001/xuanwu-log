@@ -36,14 +36,13 @@ func (req BackupRequest) Do() string {
 	}
 
 	defer func() {
-		log.Printf("Clean up\n")
 		result.Close()
 		if !trace {
 			os.Remove(fileNameFull)
 			os.Remove(fileNameZipFull)
 		}
 	}()
-	query.Query(req.Query, req.Start, req.End, result)
+	query.QueryV2(req.Query, req.Start, req.End, result)
 
 	if e := util.ZipSource(fileNameFull, fileNameZipFull); e != nil {
 		log.Fatal(e)
