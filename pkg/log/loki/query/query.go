@@ -54,7 +54,7 @@ func newQuery(q string, start, end time.Time) *query.Query {
 
 // QueryV2 v2
 func QueryV2(q string, start, end time.Time, result io.Writer) {
-	defer util.TimeMeasure("query")()
+	defer util.TimeMeasure("queryV2")()
 
 	rangeQuery := newQueryV2(q, start, end)
 	outputOptions := &output.LogOutputOptions{
