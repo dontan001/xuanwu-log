@@ -15,8 +15,8 @@ import (
 	"github.com/grafana/loki/pkg/logcli/query"
 	"github.com/grafana/loki/pkg/loghttp"
 	"github.com/grafana/loki/pkg/logproto"
-	"github.com/grafana/loki/pkg/logqlmodel"
-	"github.com/grafana/loki/pkg/logqlmodel/stats"
+	"github.com/grafana/loki/pkg/logql"
+	"github.com/grafana/loki/pkg/logql/stats"
 )
 
 type Query struct {
@@ -109,7 +109,7 @@ func (q *Query) printResult(value loghttp.ResultValue, out output.LogOutput, las
 	length := -1
 	var entry []*loghttp.Entry
 	switch value.Type() {
-	case logqlmodel.ValueTypeStreams:
+	case logql.ValueTypeStreams:
 		length, entry = q.printStream(value.(loghttp.Streams), out, lastEntry)
 	default:
 		log.Fatalf("Unable to print unsupported type: %v", value.Type())
