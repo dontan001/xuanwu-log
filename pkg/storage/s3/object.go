@@ -87,12 +87,12 @@ func HeadObject(remotePath string) error {
 	return nil
 }
 
-func GetObject() error {
+func GetObject(remotePath string) error {
 	ctx := context.Background()
 
 	result, err := objectClient.S3.GetObjectWithContext(ctx, &s3.GetObjectInput{
 		Bucket: aws.String(bucket),
-		Key:    aws.String("index/loki_index_19240/loki-loki-distributed-ingester-0-1662344787333739953-1662348480.gz"),
+		Key:    aws.String(remotePath),
 	})
 	if err != nil {
 		// Cast err to awserr.Error to handle specific error codes.
