@@ -87,27 +87,23 @@ func HeadObject(remotePath string) error {
 	return nil
 }
 
-func GetObject(remotePath string) error {
-	ctx := context.Background()
-
-	result, err := objectClient.S3.GetObjectWithContext(ctx, &s3.GetObjectInput{
-		Bucket: aws.String(bucket),
-		Key:    aws.String(remotePath),
-	})
+func GetObject(remotePath, destFile string) error {
+	file, err := os.Create(destFile)
 	if err != nil {
-		// Cast err to awserr.Error to handle specific error codes.
-		aerr, ok := err.(awserr.Error)
-		if ok && aerr.Code() == s3.ErrCodeNoSuchKey {
-			// Specific error code handling
-		}
-		return err
+		return fmt.Errorf("unable to open file %s, %v", destFile, err)
 	}
 
-	// Make sure to close the body when done with it for S3 GetObject APIs or
-	// will leak connections.
-	defer result.Body.Close()
+	defer file.Close()
+	numBytes, err := objectClient.S3Downloader.Download(file,
+		&s3.GetObjectInput{
+			Bucket: aws.String(bucket),
+			Key:    aws.String(remotePath),
+		})
+	if err != nil {
+		return fmt.Errorf("unable to download file %q, %v", remotePath, err)
+	}
 
-	fmt.Println("Object Size:", aws.Int64Value(result.ContentLength))
+	fmt.Println("Downloaded", file.Name(), numBytes, "bytes")
 	return nil
 }
 
