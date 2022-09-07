@@ -154,5 +154,14 @@ func DelObject(remotePath string) error {
 	}
 
 	_, err := objectClient.S3.DeleteObject(input)
-	return err
+	if err != nil {
+		if aerr, ok := err.(awserr.Error); ok {
+			if aerr.Code() == s3.ErrCodeNoSuchKey {
+				return nil
+			}
+		}
+		return err
+	}
+
+	return nil
 }
