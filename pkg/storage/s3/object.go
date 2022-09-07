@@ -15,6 +15,7 @@ import (
 
 	"github.com/cortexproject/cortex/pkg/util/flagext"
 	"github.com/kyligence/xuanwu-log/pkg/storage/s3/client"
+	"github.com/kyligence/xuanwu-log/pkg/util"
 )
 
 var (
@@ -69,6 +70,23 @@ func GetObjects() error {
 	return nil
 }
 
+func HeadObject(remotePath string) error {
+	result, err := objectClient.S3.HeadObject(&s3.HeadObjectInput{
+		Bucket: aws.String(bucket),
+		Key:    aws.String(remotePath),
+	})
+	if err != nil {
+		aerr, ok := err.(awserr.Error)
+		if ok && aerr.Code() == s3.ErrCodeNoSuchKey {
+			// Specific error code handling
+		}
+		return err
+	}
+
+	fmt.Println(result)
+	return nil
+}
+
 func GetObject() error {
 	ctx := context.Background()
 
@@ -93,23 +111,6 @@ func GetObject() error {
 	return nil
 }
 
-func HeadObject() error {
-	result, err := objectClient.S3.HeadObject(&s3.HeadObjectInput{
-		Bucket: aws.String(bucket),
-		Key:    aws.String("index/loki_index_19240/loki-loki-distributed-ingester-0-1662344787333739953-1662348480.gz"),
-	})
-	if err != nil {
-		aerr, ok := err.(awserr.Error)
-		if ok && aerr.Code() == s3.ErrCodeNoSuchKey {
-			// Specific error code handling
-		}
-		return err
-	}
-
-	fmt.Println(result)
-	return nil
-}
-
 func PutObject(remotePath, srcFile string) error {
 	file, err := os.Open(srcFile)
 	if err != nil {
@@ -122,6 +123,7 @@ func PutObject(remotePath, srcFile string) error {
 		return fmt.Errorf("failed to get size of file %s: %v", srcFile, err)
 	}
 
+	defer util.TimeMeasureRate("PutObject", info.Size())()
 	_, err = objectClient.S3Uploader.Upload(&s3manager.UploadInput{
 		Bucket: aws.String(bucket),
 		Key:    aws.String(remotePath),

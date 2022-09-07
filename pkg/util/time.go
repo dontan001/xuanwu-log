@@ -3,6 +3,7 @@ package util
 import (
 	"fmt"
 	"log"
+	"math"
 	"regexp"
 	"strconv"
 	"time"
@@ -57,5 +58,14 @@ func TimeMeasure(desc string) func() {
 	start := time.Now()
 	return func() {
 		log.Printf("%v took %v", desc, time.Since(start))
+	}
+}
+
+func TimeMeasureRate(desc string, totalBytes int64) func() {
+	start := time.Now()
+	return func() {
+		elapsed := time.Since(start).Seconds()
+		rate := math.Ceil(float64(totalBytes) / (elapsed * 1024 * 1024))
+		log.Printf("%v took %v seconds, rate %.1f Mib/s", desc, elapsed, rate)
 	}
 }
