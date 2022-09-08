@@ -111,9 +111,10 @@ func GetObject(remotePath, destFile string) error {
 			Key:    aws.String(remotePath),
 		}, func(downloader *s3manager.Downloader) {
 			downloader.PartSize = s3manager.DefaultDownloadPartSize * 10
-			downloader.Concurrency = s3manager.DefaultDownloadConcurrency
 			downloader.BufferProvider = s3manager.NewPooledBufferedWriterReadFromProvider(
 				int(s3manager.DefaultDownloadPartSize * 5))
+
+			downloader.Concurrency = s3manager.DefaultDownloadConcurrency
 		})
 	if err != nil {
 		return fmt.Errorf("unable to download file %q, %v", remotePath, err)
