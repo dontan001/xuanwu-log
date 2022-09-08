@@ -94,16 +94,32 @@ func GetObject(remotePath, destFile string) error {
 	}
 
 	defer file.Close()
+
+	objectMeta, err := objectClient.S3.HeadObject(&s3.HeadObjectInput{
+		Bucket: aws.String(bucket),
+		Key:    aws.String(remotePath),
+	})
+	if err != nil {
+		return fmt.Errorf("unable to get object info %q, %v", remotePath, err)
+	}
+	size := objectMeta.ContentLength
+
+	defer util.TimeMeasureRate("GetObject", *size)()
 	numBytes, err := objectClient.S3Downloader.Download(file,
 		&s3.GetObjectInput{
 			Bucket: aws.String(bucket),
 			Key:    aws.String(remotePath),
+		}, func(downloader *s3manager.Downloader) {
+			downloader.PartSize = s3manager.DefaultDownloadPartSize * 10
+			downloader.Concurrency = s3manager.DefaultDownloadConcurrency
+			downloader.BufferProvider = s3manager.NewPooledBufferedWriterReadFromProvider(
+				int(s3manager.DefaultDownloadPartSize * 5))
 		})
 	if err != nil {
 		return fmt.Errorf("unable to download file %q, %v", remotePath, err)
 	}
 
-	fmt.Println("Downloaded", file.Name(), numBytes, "bytes")
+	log.Printf("Successfully downloaded %q from bucket %q with %d bytes \n", file.Name(), bucket, numBytes)
 	return nil
 }
 
@@ -126,7 +142,7 @@ func PutObject(remotePath, srcFile string) error {
 		Body:   file,
 	}, func(uploader *s3manager.Uploader) {
 		// set the part size as low as possible to avoid timeouts and aborts
-		var partSize int64 = s3manager.MinUploadPartSize
+		var partSize int64 = s3manager.DefaultUploadPartSize
 		maxParts := math.Ceil(float64(info.Size() / partSize))
 
 		// 10000 parts is the limit for AWS S3. If the resulting number of parts would exceed that limit, increase the
