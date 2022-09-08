@@ -111,8 +111,8 @@ func GetObject(remotePath, destFile string) error {
 			Key:    aws.String(remotePath),
 		}, func(downloader *s3manager.Downloader) {
 			downloader.PartSize = s3manager.DefaultDownloadPartSize * 10
-			downloader.BufferProvider = s3manager.NewPooledBufferedWriterReadFromProvider(
-				int(s3manager.DefaultDownloadPartSize * 5))
+			/*downloader.BufferProvider = s3manager.NewPooledBufferedWriterReadFromProvider(
+			int(s3manager.DefaultDownloadPartSize * 5))*/
 
 			downloader.Concurrency = s3manager.DefaultDownloadConcurrency
 		})
