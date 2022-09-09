@@ -7,6 +7,10 @@ import (
 	"path/filepath"
 )
 
+func Compress(source, target string) error {
+	return ZipSource(source, target)
+}
+
 func ZipSource(source, target string) error {
 	defer TimeMeasure("zip")()
 

@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/kyligence/xuanwu-log/pkg/log/loki/query"
+	"github.com/kyligence/xuanwu-log/pkg/data"
 	"github.com/kyligence/xuanwu-log/pkg/util"
 )
 
@@ -42,15 +42,20 @@ func (req BackupRequest) Do() error {
 			os.Remove(fileNameZipFull)
 		}
 	}()
-	err = query.QueryV2(req.Query, req.Start, req.End, result)
+	err = data.Extract(req.Query, req.Start, req.End, result)
 	if err != nil {
 		return err
 	}
 
-	err = util.ZipSource(fileNameFull, fileNameZipFull)
+	err = util.Compress(fileNameFull, fileNameZipFull)
 	if err != nil {
 		return err
 	}
+
+	/*err = s3.PutObject("", fileNameZipFull)
+	if err != nil {
+		return err
+	}*/
 
 	return nil
 }

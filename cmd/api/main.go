@@ -9,7 +9,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/kyligence/xuanwu-log/pkg/log/loki/query"
+	"github.com/kyligence/xuanwu-log/pkg/data"
 	"github.com/kyligence/xuanwu-log/pkg/util"
 )
 
@@ -68,7 +68,7 @@ func start() {
 			startParsed.Format(time.RFC3339Nano), startParsed.UnixNano(), endParsed.Format(time.RFC3339Nano), endParsed.UnixNano())
 
 		result := &bytes.Buffer{}
-		err := query.QueryV2(qry, startParsed, endParsed, result)
+		err := data.Extract(qry, startParsed, endParsed, result)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -122,7 +122,7 @@ func start() {
 			os.Remove(fileNameFull)
 			os.Remove(fileNameZipFull)
 		}()
-		err = query.QueryV2(qry, startParsed, endParsed, result)
+		err = data.Extract(qry, startParsed, endParsed, result)
 		if err != nil {
 			log.Fatal(err)
 		}
