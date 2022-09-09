@@ -31,6 +31,14 @@ type ArchiveConfig struct {
 func (req BackupRequest) Do() error {
 	log.Printf("Proceed req: %s", req.String())
 
+	exist, err := storage.Exist(req.ArchiveConfig.ObjectPrefix)
+	if err != nil {
+		return err
+	}
+	if exist {
+		log.Printf("Object %q exists, skip", req.ArchiveConfig.ObjectPrefix)
+	}
+
 	fileName := filepath.Join(req.ArchiveConfig.WorkingDir, req.ArchiveConfig.Name)
 	fileNameArchive := filepath.Join(req.ArchiveConfig.WorkingDir, req.ArchiveConfig.ArchiveName)
 
@@ -57,6 +65,9 @@ func (req BackupRequest) Do() error {
 		return err
 	}
 
+	if trace {
+		return nil
+	}
 	err = storage.Upload(req.ArchiveConfig.ObjectPrefix, fileNameArchive)
 	if err != nil {
 		return err

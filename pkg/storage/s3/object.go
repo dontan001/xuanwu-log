@@ -70,7 +70,7 @@ func GetObjects() error {
 	return nil
 }
 
-func HeadObject(remotePath string) error {
+func HeadObject(remotePath string) (*s3.HeadObjectOutput, error) {
 	result, err := objectClient.S3.HeadObject(&s3.HeadObjectInput{
 		Bucket: aws.String(bucket),
 		Key:    aws.String(remotePath),
@@ -78,13 +78,14 @@ func HeadObject(remotePath string) error {
 	if err != nil {
 		aerr, ok := err.(awserr.Error)
 		if ok && aerr.Code() == s3.ErrCodeNoSuchKey {
-			// Specific error code handling
+			return nil, nil
 		}
-		return err
+
+		return nil, err
 	}
 
-	fmt.Println(result)
-	return nil
+	log.Printf("Object head: %v", result)
+	return result, nil
 }
 
 func GetObject(remotePath, destFile string) error {
