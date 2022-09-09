@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	BASE = "/Users/dongge.tan/Dev/workspace/GOPATH/github.com/Kyligence/xuanwu-log/test/%s"
+	WorkingDir = "/Users/dongge.tan/Dev/workspace/GOPATH/github.com/Kyligence/xuanwu-log/test/%s"
 )
 
 func main() {
@@ -28,7 +28,7 @@ func start() {
 		defer util.TimeMeasure("download")()
 
 		fileName := req.URL.Query().Get("file")
-		fileNameFull := fmt.Sprintf(BASE, fileName)
+		fileNameFull := fmt.Sprintf(WorkingDir, fileName)
 		// fileNameFull := fmt.Sprintf("/app/test/%s", fileName)
 		w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", fileName))
 		http.ServeFile(w, req, fileNameFull)
@@ -111,8 +111,8 @@ func start() {
 
 		fileName := "tmp.txt"
 		fileNameZip := fmt.Sprintf("%s.zip", fileName)
-		fileNameFull := fmt.Sprintf(BASE, fileName)
-		fileNameZipFull := fmt.Sprintf(BASE, fileNameZip)
+		fileNameFull := fmt.Sprintf(WorkingDir, fileName)
+		fileNameZipFull := fmt.Sprintf(WorkingDir, fileNameZip)
 		result, err := os.Create(fileNameFull)
 		if err != nil {
 			log.Fatal(err)
