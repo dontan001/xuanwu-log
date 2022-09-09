@@ -25,7 +25,7 @@ func TestGetObjects(t *testing.T) {
 
 func TestHeadObject(t *testing.T) {
 	remotePath := "index/loki_index_19240/loki-loki-distributed-ingester-0-1662344787333739953-1662348480.gz"
-	err := HeadObject(remotePath)
+	_, err := HeadObject(remotePath)
 	if err != nil {
 		t.Logf("%s", err)
 	}
