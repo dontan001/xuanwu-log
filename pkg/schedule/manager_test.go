@@ -8,16 +8,19 @@ import (
 var (
 	testConf = &QueryConf{
 		Query: "{job=\"fluent-bit\",app=\"yinglong\"}",
-		Schedule: Schedule{
+		Schedule: &Schedule{
 			Interval: DefaultInterval,
 			Max:      DefaultMax},
-		Prefix:      "",
-		NamePattern: "test-%s",
+		Archive: &Archive{
+			Type:        DefaultType,
+			WorkingDir:  DefaultWorkingDir,
+			NamePattern: "%s.log",
+		},
 	}
 )
 
 func TestGenerateRequests(t *testing.T) {
-	requests := generateRequests(testConf)
+	requests := testConf.generateRequests()
 	log.Printf("total: %d", len(requests))
 	for idx, request := range requests {
 		log.Printf("Request #%d %s", idx+1, request.String())
@@ -25,6 +28,6 @@ func TestGenerateRequests(t *testing.T) {
 }
 
 func TestSubmit(t *testing.T) {
-	requests := generateRequests(testConf)
+	requests := testConf.generateRequests()
 	submit(requests)
 }

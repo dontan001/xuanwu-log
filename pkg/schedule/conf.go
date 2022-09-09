@@ -4,20 +4,29 @@ const (
 	DefaultInterval = 3
 	DefaultMax      = 1 * 8
 
-	PARALLELIZE = 4
-	BASE        = "/Users/dongge.tan/Dev/workspace/GOPATH/github.com/Kyligence/xuanwu-log/test/backup/%s"
+	DefaultType       = "zip"
+	DefaultWorkingDir = "/var/log"
+	BASE              = "/Users/dongge.tan/Dev/workspace/GOPATH/github.com/Kyligence/xuanwu-log/test/backup/%s"
 
-	trace = true
+	PARALLELIZE = 4
+	trace       = true
 )
 
 type QueryConf struct {
-	Query       string
-	Schedule    Schedule
-	Prefix      string
-	NamePattern string
+	Query    string
+	Schedule *Schedule
+	Archive  *Archive
+	Hash     string // sys
 }
 
 type Schedule struct {
 	Interval int
 	Max      int
+}
+
+type Archive struct {
+	Type        string
+	WorkingDir  string
+	SubDir      string // sys
+	NamePattern string
 }

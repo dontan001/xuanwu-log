@@ -3,6 +3,8 @@ package schedule
 import (
 	"fmt"
 	"log"
+	"os"
+	"path/filepath"
 	"runtime"
 	"sync"
 	"time"
@@ -13,20 +15,39 @@ import (
 func Run() {
 	queryConf := &QueryConf{
 		Query: "{job=\"fluent-bit\",app=\"yinglong\"}",
-		Schedule: Schedule{
+		Schedule: &Schedule{
 			Interval: DefaultInterval,
 			Max:      DefaultMax},
-		Prefix:      "",
-		NamePattern: "log.%s.%s",
+		Archive: &Archive{
+			Type:        DefaultType,
+			WorkingDir:  DefaultWorkingDir,
+			NamePattern: "%s.log",
+		},
 	}
 
-	requests := generateRequests(queryConf)
+	queryConf.ensure()
+	requests := queryConf.generateRequests()
 	log.Printf("Requests total: %d", len(requests))
 
 	submit(requests)
 }
 
-func generateRequests(conf *QueryConf) (requests []BackupRequest) {
+func (conf *QueryConf) ensure() {
+	if conf.Archive.WorkingDir == "" {
+		conf.Archive.WorkingDir = DefaultWorkingDir
+	}
+
+	conf.Hash = fmt.Sprintf("%d", util.Hash(conf.Query))
+	conf.Archive.SubDir = filepath.Join("backup", conf.Hash)
+
+	fDir := filepath.Join(conf.Archive.WorkingDir, conf.Archive.SubDir)
+	err := os.MkdirAll(fDir, os.ModePerm)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func (conf *QueryConf) generateRequests() (requests []BackupRequest) {
 	t := time.Now()
 	log.Printf("Checked at: %s", t.Format(time.RFC3339Nano))
 
@@ -35,18 +56,18 @@ func generateRequests(conf *QueryConf) (requests []BackupRequest) {
 		start := lastBackup.Add(-time.Duration(conf.Schedule.Interval) * time.Hour)
 		end := lastBackup.Add(-1 * time.Nanosecond)
 
-		prefix := conf.Prefix
-		if prefix == "" {
-			prefix = fmt.Sprintf("%d", util.Hash(conf.Query))
-		}
-		archiveName := fmt.Sprintf(conf.NamePattern, prefix, lastBackup.Format(time.RFC3339))
+		name := fmt.Sprintf(conf.Archive.NamePattern, lastBackup.Format(time.RFC3339))
+		archiveName := fmt.Sprintf("%s.%s", name, conf.Archive.Type)
 
 		requests = append(requests, BackupRequest{
 			Query: conf.Query,
 			Start: start,
 			End:   end,
-			Archive: Archive{
-				Name: archiveName,
+			ArchiveConfig: ArchiveConfig{
+				Name:         name,
+				ArchiveName:  archiveName,
+				WorkingDir:   filepath.Join(conf.Archive.WorkingDir, conf.Archive.SubDir),
+				ObjectPrefix: filepath.Join(conf.Archive.SubDir, archiveName),
 			},
 		})
 		lastBackup = start

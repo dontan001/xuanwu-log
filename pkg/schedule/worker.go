@@ -4,33 +4,37 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
 	"github.com/kyligence/xuanwu-log/pkg/data"
+	"github.com/kyligence/xuanwu-log/pkg/storage"
 	"github.com/kyligence/xuanwu-log/pkg/util"
 )
 
 type BackupRequest struct {
-	Query   string
-	Start   time.Time
-	End     time.Time
-	Archive Archive
+	Query         string
+	Start         time.Time
+	End           time.Time
+	ArchiveConfig ArchiveConfig
 }
 
-type Archive struct {
-	// Prefix string
-	Name string
+type ArchiveConfig struct {
+	Name        string
+	ArchiveName string
+	WorkingDir  string
+
+	ObjectPrefix string
 }
 
 func (req BackupRequest) Do() error {
 	log.Printf("Proceed req: %s", req.String())
 
-	fileName := req.Archive.Name
-	fileNameZip := fmt.Sprintf("%s.zip", fileName)
-	fileNameFull := fmt.Sprintf(BASE, fileName)
-	fileNameZipFull := fmt.Sprintf(BASE, fileNameZip)
-	result, err := os.Create(fileNameFull)
+	fileName := filepath.Join(req.ArchiveConfig.WorkingDir, req.ArchiveConfig.Name)
+	fileNameArchive := filepath.Join(req.ArchiveConfig.WorkingDir, req.ArchiveConfig.ArchiveName)
+
+	result, err := os.Create(fileName)
 	if err != nil {
 		return err
 	}
@@ -38,24 +42,25 @@ func (req BackupRequest) Do() error {
 	defer func() {
 		result.Close()
 		if !trace {
-			os.Remove(fileNameFull)
-			os.Remove(fileNameZipFull)
+			os.Remove(fileName)
+			os.Remove(fileNameArchive)
 		}
 	}()
+
 	err = data.Extract(req.Query, req.Start, req.End, result)
 	if err != nil {
 		return err
 	}
 
-	err = util.Compress(fileNameFull, fileNameZipFull)
+	err = util.Compress(fileName, fileNameArchive)
 	if err != nil {
 		return err
 	}
 
-	/*err = s3.PutObject("", fileNameZipFull)
+	err = storage.Upload(req.ArchiveConfig.ObjectPrefix, fileNameArchive)
 	if err != nil {
 		return err
-	}*/
+	}
 
 	return nil
 }
@@ -68,7 +73,8 @@ func (req BackupRequest) String() string {
 	b.WriteString("start=" + req.Start.Format(time.RFC3339Nano) + ",")
 	b.WriteString("startUnix=" + fmt.Sprintf("%d", req.Start.UnixNano()) + ",")
 	b.WriteString("end=" + req.End.Format(time.RFC3339Nano) + ",")
-	b.WriteString("endUnix=" + fmt.Sprintf("%d", req.End.UnixNano()))
+	b.WriteString("endUnix=" + fmt.Sprintf("%d", req.End.UnixNano()) + ",")
+	b.WriteString("prefix=" + req.ArchiveConfig.ObjectPrefix)
 	b.WriteByte('}')
 
 	return b.String()
