@@ -20,16 +20,18 @@ import (
 
 const (
 	bucket = "donggetest"
+	region = endpoints.UsWest2RegionID
 
+	logLevel            = aws.LogDebug
 	uploadConcurrency   = s3manager.DefaultUploadConcurrency
 	downloadConcurrency = s3manager.DefaultDownloadConcurrency
 )
 
 var (
 	cfg = client.S3Config{
-		Level:           aws.LogDebugWithHTTPBody,
+		Level:           logLevel,
 		Insecure:        true,
-		Region:          endpoints.UsWest2RegionID,
+		Region:          region,
 		AccessKeyID:     AccessKeyID,
 		SecretAccessKey: flagext.Secret{Value: SecretAccessKey},
 	}
