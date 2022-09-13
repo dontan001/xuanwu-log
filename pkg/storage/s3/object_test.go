@@ -85,3 +85,12 @@ func TestDelObject(t *testing.T) {
 		t.Logf("%s", err)
 	}
 }
+
+func TestDelObject404(t *testing.T) {
+	remotePath := "test/xxx.go"
+
+	err := DelObject(remotePath)
+	if err != nil {
+		t.Logf("%s", err)
+	}
+}
