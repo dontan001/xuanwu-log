@@ -19,6 +19,10 @@ var (
 	}
 )
 
+func TestEnsure(t *testing.T) {
+	testConf.ensure()
+}
+
 func TestGenerateRequests(t *testing.T) {
 	requests := testConf.generateRequests()
 	log.Printf("total: %d", len(requests))
