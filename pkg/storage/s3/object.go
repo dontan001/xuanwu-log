@@ -18,9 +18,14 @@ import (
 	"github.com/kyligence/xuanwu-log/pkg/util"
 )
 
-var (
+const (
 	bucket = "donggetest"
 
+	uploadConcurrency   = s3manager.DefaultUploadConcurrency
+	downloadConcurrency = s3manager.DefaultDownloadConcurrency
+)
+
+var (
 	cfg = client.S3Config{
 		Level:           aws.LogDebugWithHTTPBody,
 		Insecure:        true,
@@ -115,7 +120,7 @@ func GetObject(remotePath, destFile string) error {
 			/*downloader.BufferProvider = s3manager.NewPooledBufferedWriterReadFromProvider(
 			int(s3manager.DefaultDownloadPartSize * 5))*/
 
-			downloader.Concurrency = s3manager.DefaultDownloadConcurrency
+			downloader.Concurrency = downloadConcurrency
 		})
 	if err != nil {
 		return fmt.Errorf("unable to download file %q, %v", remotePath, err)
@@ -153,7 +158,7 @@ func PutObject(remotePath, srcFile string) error {
 			partSize = int64(math.Ceil(float64(info.Size()) / s3manager.MaxUploadParts))
 		}
 
-		uploader.Concurrency = s3manager.DefaultUploadConcurrency
+		uploader.Concurrency = uploadConcurrency
 		uploader.LeavePartsOnError = false
 		uploader.PartSize = partSize
 	})
