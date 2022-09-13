@@ -31,6 +31,14 @@ func TestHeadObject(t *testing.T) {
 	}
 }
 
+func TestHeadObject404(t *testing.T) {
+	remotePath := "index/loki_index_19240/loki-loki-distributed-ingester-0-1662344787333739953-xxxx.gz"
+	_, err := HeadObject(remotePath)
+	if err != nil {
+		t.Fatalf("%s", err)
+	}
+}
+
 func TestGetObject(t *testing.T) {
 	remotePath := "index/loki_index_19240/loki-loki-distributed-ingester-0-1662344787333739953-1662348480.gz"
 	fileName := fmt.Sprintf(WorkingDir, "test/tmp.txt")

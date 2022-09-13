@@ -77,7 +77,7 @@ func HeadObject(remotePath string) (*s3.HeadObjectOutput, error) {
 	})
 	if err != nil {
 		aerr, ok := err.(awserr.Error)
-		if ok && aerr.Code() == s3.ErrCodeNoSuchKey {
+		if ok && aerr.Code() == "NotFound" {
 			return nil, nil
 		}
 
