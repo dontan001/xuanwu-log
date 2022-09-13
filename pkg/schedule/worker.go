@@ -37,6 +37,7 @@ func (req BackupRequest) Do() error {
 	}
 	if exist {
 		log.Printf("Backup %q exists, skip", req.ArchiveConfig.ObjectPrefix)
+		return nil
 	}
 
 	fileName := filepath.Join(req.ArchiveConfig.WorkingDir, req.ArchiveConfig.Name)
