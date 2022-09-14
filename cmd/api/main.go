@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/kyligence/xuanwu-log/pkg/data"
@@ -14,7 +15,8 @@ import (
 )
 
 const (
-	WorkingDir = "/Users/dongge.tan/Dev/workspace/GOPATH/github.com/Kyligence/xuanwu-log/test/%s"
+	WorkingDir = "/var/log/log-api"
+	// "/Users/dongge.tan/Dev/workspace/GOPATH/github.com/Kyligence/xuanwu-log/test"
 )
 
 func main() {
@@ -28,8 +30,7 @@ func start() {
 		defer util.TimeMeasure("download")()
 
 		fileName := req.URL.Query().Get("file")
-		fileNameFull := fmt.Sprintf(WorkingDir, fileName)
-		// fileNameFull := fmt.Sprintf("/app/test/%s", fileName)
+		fileNameFull := filepath.Join(WorkingDir, fileName)
 		w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", fileName))
 		http.ServeFile(w, req, fileNameFull)
 	})
@@ -110,9 +111,9 @@ func start() {
 			startParsed.Format(time.RFC3339Nano), startParsed.UnixNano(), endParsed.Format(time.RFC3339Nano), endParsed.UnixNano())
 
 		fileName := "tmp.txt"
-		fileNameZip := fmt.Sprintf("%s.zip", fileName)
-		fileNameFull := fmt.Sprintf(WorkingDir, fileName)
-		fileNameZipFull := fmt.Sprintf(WorkingDir, fileNameZip)
+		fileNameFull := filepath.Join(WorkingDir, fileName)
+		fileNameArchive := fmt.Sprintf("%s.zip", fileName)
+		fileNameArchiveFull := filepath.Join(WorkingDir, fileNameArchive)
 		result, err := os.Create(fileNameFull)
 		if err != nil {
 			log.Fatal(err)
@@ -120,20 +121,21 @@ func start() {
 		defer func() {
 			result.Close()
 			os.Remove(fileNameFull)
-			os.Remove(fileNameZipFull)
+			os.Remove(fileNameArchiveFull)
 		}()
+
 		err = data.Extract(qry, startParsed, endParsed, result)
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		if err = util.ZipSource(fileNameFull, fileNameZipFull); err != nil {
+		if err = util.ZipSource(fileNameFull, fileNameArchiveFull); err != nil {
 			log.Fatal(err)
 		}
 
 		w.Header().Set("Content-Type", "application/zip")
-		w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", fileNameZip))
-		http.ServeFile(w, req, fileNameZipFull)
+		w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", fileNameArchive))
+		http.ServeFile(w, req, fileNameArchiveFull)
 	})
 
 	http.ListenAndServe(":8080", nil)
