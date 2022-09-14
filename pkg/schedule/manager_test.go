@@ -6,11 +6,21 @@ import (
 )
 
 var (
-	testConf = &QueryConf{
-		Query: "{job=\"fluent-bit\",app=\"yinglong\"}",
-		Schedule: &Schedule{
-			Interval: DefaultInterval,
-			Max:      DefaultMax},
+	testConf = &BackupConf{
+		Queries: []*QueryConf{
+			{
+				Query: "{job=\"fluent-bit\",app=\"yinglong\"}",
+				Schedule: &Schedule{
+					Interval: DefaultInterval,
+					Max:      DefaultMax},
+			},
+			{
+				Query: "{job=\"fluent-bit\",app=\"yinglong\",node=\"ip-10-1-254-253.us-west-2.compute.internal\"}",
+				Schedule: &Schedule{
+					Interval: DefaultInterval,
+					Max:      DefaultMax},
+			},
+		},
 		Archive: &Archive{
 			Type:        DefaultType,
 			WorkingDir:  DefaultWorkingDir,
@@ -20,18 +30,27 @@ var (
 )
 
 func TestEnsure(t *testing.T) {
-	testConf.ensure()
+	for _, query := range testConf.Queries {
+		query.ensure(testConf)
+	}
 }
 
 func TestGenerateRequests(t *testing.T) {
-	requests := testConf.generateRequests()
-	log.Printf("total: %d", len(requests))
-	for idx, request := range requests {
-		log.Printf("Request #%d %s", idx+1, request.String())
+	for _, query := range testConf.Queries {
+		query.ensure(testConf)
+		requests := query.generateRequests()
+
+		log.Printf("total: %d", len(requests))
+		for idx, request := range requests {
+			log.Printf("Request #%d %s", idx+1, request.String())
+		}
 	}
 }
 
 func TestSubmit(t *testing.T) {
-	requests := testConf.generateRequests()
-	submit(requests)
+	for _, query := range testConf.Queries {
+		query.ensure(testConf)
+		requests := query.generateRequests()
+		submit(requests)
+	}
 }
