@@ -1,12 +1,12 @@
 package s3
 
 import (
-	"fmt"
+	"path/filepath"
 	"testing"
 )
 
 const (
-	WorkingDir = "/Users/dongge.tan/Dev/workspace/GOPATH/github.com/Kyligence/xuanwu-log/%s"
+	WorkingDir = "/Users/dongge.tan/Dev/workspace/GOPATH/github.com/Kyligence/xuanwu-log/test"
 )
 
 func TestGetBuckets(t *testing.T) {
@@ -41,7 +41,7 @@ func TestHeadObject404(t *testing.T) {
 
 func TestGetObject(t *testing.T) {
 	remotePath := "index/loki_index_19240/loki-loki-distributed-ingester-0-1662344787333739953-1662348480.gz"
-	fileName := fmt.Sprintf(WorkingDir, "test/tmp.txt")
+	fileName := filepath.Join(WorkingDir, "tmp.txt")
 	err := GetObject(remotePath, fileName)
 	if err != nil {
 		t.Logf("%s", err)
@@ -50,7 +50,7 @@ func TestGetObject(t *testing.T) {
 
 func TestGetObjectBig(t *testing.T) {
 	remotePath := "test/test1g.txt"
-	fileName := fmt.Sprintf(WorkingDir, "test/tmp.txt")
+	fileName := filepath.Join(WorkingDir, "tmp.txt")
 	err := GetObject(remotePath, fileName)
 	if err != nil {
 		t.Logf("%s", err)
@@ -58,7 +58,7 @@ func TestGetObjectBig(t *testing.T) {
 }
 
 func TestPutObject(t *testing.T) {
-	fileName := fmt.Sprintf(WorkingDir, "test/README.md")
+	fileName := filepath.Join(WorkingDir, "README.md")
 	remotePath := "test/README.md"
 
 	err := PutObject(remotePath, fileName)
@@ -68,7 +68,7 @@ func TestPutObject(t *testing.T) {
 }
 
 func TestPutObjectBig(t *testing.T) {
-	fileName := fmt.Sprintf(WorkingDir, "test/test1g.txt")
+	fileName := filepath.Join(WorkingDir, "test1g.txt")
 	remotePath := "test/test1g.txt"
 
 	err := PutObject(remotePath, fileName)
