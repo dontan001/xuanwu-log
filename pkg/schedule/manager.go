@@ -13,11 +13,21 @@ import (
 )
 
 func Run() {
-	queryConf := &QueryConf{
-		Query: "{job=\"fluent-bit\",app=\"yinglong\"}",
-		Schedule: &Schedule{
-			Interval: DefaultInterval,
-			Max:      DefaultMax},
+	backupConf := &BackupConf{
+		Queries: []*QueryConf{
+			{
+				Query: "{job=\"fluent-bit\",app=\"yinglong\"}",
+				Schedule: &Schedule{
+					Interval: DefaultInterval,
+					Max:      DefaultMax},
+			},
+			{
+				Query: "{job=\"fluent-bit\",app=\"yinglong\",node=\"ip-10-1-254-253.us-west-2.compute.internal\"}",
+				Schedule: &Schedule{
+					Interval: DefaultInterval,
+					Max:      DefaultMax},
+			},
+		},
 		Archive: &Archive{
 			Type:        DefaultType,
 			WorkingDir:  DefaultWorkingDir,
@@ -25,16 +35,28 @@ func Run() {
 		},
 	}
 
-	queryConf.ensure()
-	requests := queryConf.generateRequests()
-	log.Printf("Requests total: %d", len(requests))
+	for _, queryConf := range backupConf.Queries {
+		log.Printf("Proceed qry: %q", queryConf.Query)
+		queryConf.ensure(backupConf)
+		requests := queryConf.generateRequests()
 
-	submit(requests)
+		log.Printf("Requests total: %d", len(requests))
+		submit(requests)
+	}
 }
 
-func (conf *QueryConf) ensure() {
+func (conf *QueryConf) ensure(backupConf *BackupConf) {
+	if conf.Archive == nil {
+		conf.Archive = &ArchiveQuery{}
+	}
 	if conf.Archive.WorkingDir == "" {
-		conf.Archive.WorkingDir = DefaultWorkingDir
+		conf.Archive.WorkingDir = backupConf.Archive.WorkingDir
+	}
+	if conf.Archive.Type == "" {
+		conf.Archive.Type = backupConf.Archive.Type
+	}
+	if conf.Archive.NamePattern == "" {
+		conf.Archive.NamePattern = backupConf.Archive.NamePattern
 	}
 
 	conf.Hash = fmt.Sprintf("%d", util.Hash(conf.Query))
@@ -96,7 +118,7 @@ func submit(requests []BackupRequest) {
 			req := requests[i]
 			err := req.Do()
 			if err != nil {
-				log.Printf("Request proceed err: %s", err)
+				log.Printf("Proceed req err: %s", err)
 				log.Printf("Retry next time...")
 			}
 			realtime()

@@ -12,10 +12,15 @@ const (
 	trace       = true
 )
 
+type BackupConf struct {
+	Queries []*QueryConf
+	Archive *Archive
+}
+
 type QueryConf struct {
 	Query    string
 	Schedule *Schedule
-	Archive  *Archive
+	Archive  *ArchiveQuery
 	Hash     string // sys
 }
 
@@ -27,6 +32,10 @@ type Schedule struct {
 type Archive struct {
 	Type        string
 	WorkingDir  string
-	SubDir      string // sys
 	NamePattern string
+}
+
+type ArchiveQuery struct {
+	Archive
+	SubDir string // sys
 }
