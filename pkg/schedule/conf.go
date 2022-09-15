@@ -6,7 +6,6 @@ const (
 
 	DefaultType       = "zip"
 	DefaultWorkingDir = "/var/log"
-	// "/Users/dongge.tan/Dev/workspace/GOPATH/github.com/Kyligence/xuanwu-log/test"
 
 	PARALLELIZE = 4
 	trace       = true
