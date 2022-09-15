@@ -12,8 +12,8 @@ import (
 	"github.com/kyligence/xuanwu-log/pkg/util"
 )
 
-func Run() {
-	backupConf := &BackupConf{
+func Run(backupConf *BackupConf) {
+	/*backupConf := &BackupConf{
 		Queries: []*QueryConf{
 			{
 				Query: "{job=\"fluent-bit\",app=\"yinglong\"}",
@@ -33,7 +33,7 @@ func Run() {
 			WorkingDir:  DefaultWorkingDir,
 			NamePattern: "%s.log",
 		},
-	}
+	}*/
 
 	for _, queryConf := range backupConf.Queries {
 		log.Printf("Proceed qry: %q", queryConf.Query)

@@ -14,7 +14,7 @@ spec:
             image: dontan001/xuanwu-log:schedule
             imagePullPolicy: Always
             args:
-              - -config.file=/etc/config/config.yaml
+            - -config.file=/etc/config/config.yaml
             volumeMounts:
             - name: config
               mountPath: /etc/config

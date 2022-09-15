@@ -13,29 +13,50 @@ const (
 )
 
 type BackupConf struct {
-	Queries []*QueryConf
-	Archive *Archive
+	Data    *Data        `yaml:"data"`
+	Queries []*QueryConf `yaml:"queries"`
+	Archive *Archive     `yaml:"archive"`
+}
+
+type Data struct {
+	Loki *Loki `yaml:"loki"`
+}
+
+type Loki struct {
+	Address string `yaml:"address"`
+}
+
+func (c *Data) Validate() error {
+	return nil
 }
 
 type QueryConf struct {
-	Query    string
-	Schedule *Schedule
-	Archive  *ArchiveQuery
-	Hash     string // sys
+	Query    string        `yaml:"query"`
+	Schedule *Schedule     `yaml:"schedule"`
+	Archive  *ArchiveQuery `yaml:"archive"`
+	Hash     string        // sys
 }
 
 type Schedule struct {
-	Interval int
-	Max      int
+	Interval int `yaml:"interval"`
+	Max      int `yaml:"max"`
 }
 
 type Archive struct {
-	Type        string
-	WorkingDir  string
-	NamePattern string
+	Type        string `yaml:"type"`
+	WorkingDir  string `yaml:"workingDir"`
+	NamePattern string `yaml:"namePattern"`
 }
 
 type ArchiveQuery struct {
 	Archive
 	SubDir string // sys
+}
+
+func (c *QueryConf) Validate() error {
+	return nil
+}
+
+func (c *BackupConf) Validate() error {
+	return nil
 }
