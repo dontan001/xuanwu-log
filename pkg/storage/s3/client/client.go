@@ -21,9 +21,9 @@ type S3Config struct {
 	Insecure         bool
 	Level            aws.LogLevelType
 
-	BucketNames string
-	Endpoint    string
-	Region      string
+	Bucket   string
+	Region   string
+	Endpoint string
 
 	AccessKeyID     string
 	SecretAccessKey flagext.Secret
