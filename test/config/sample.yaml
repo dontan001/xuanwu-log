@@ -8,7 +8,7 @@ queries:
       max: 8
 archive:
   type: zip
-  workingDir: /var/log
+  workingDir: /Users/dongge.tan/Dev/workspace/GOPATH/github.com/Kyligence/xuanwu-log/test
   namePattern: "%s.log"
   s3:
     bucket: donggetest
