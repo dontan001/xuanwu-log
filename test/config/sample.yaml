@@ -1,0 +1,15 @@
+data:
+  loki:
+    address: http://loki-loki-distributed-querier:3100
+queries:
+  - query: "{job=\"fluent-bit\",app=\"yinglong\"}"
+    schedule:
+      interval: 3
+      max: 8
+archive:
+  type: zip
+  workingDir: /var/log
+  namePattern: "%s.log"
+  s3:
+    bucket: donggetest
+    region: us-west-2
