@@ -2,19 +2,25 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: hello
+  name: backup
 spec:
-  schedule: "* * * * *"
+  schedule: "0 */1 * * *"
   jobTemplate:
     spec:
       template:
         spec:
           containers:
-            - name: hello
-              image: busybox:1.28
-              imagePullPolicy: IfNotPresent
-              command:
-                - /bin/sh
-                - -c
-                - date; echo Hello from the Kubernetes cluster
+          - name: backup
+            image: dontan001/xuanwu-log:schedule
+            imagePullPolicy: Always
+            args:
+              - -config.file=/etc/config/config.yaml
+            volumeMounts:
+            - name: config
+              mountPath: /etc/config
           restartPolicy: OnFailure
+          volumes:
+          - name: config
+            configMap:
+              name: backup
+              defaultMode: 420
