@@ -6,8 +6,8 @@ metadata:
 data:
   config.yaml: |
     server:
-      http_listen_port: 8080
-      working_directory: /var/log/log-api
+      port: ":8080"
+      workingDir: /var/log/log-api
     data:
       loki:
         address: http://loki-loki-distributed-querier:3100
