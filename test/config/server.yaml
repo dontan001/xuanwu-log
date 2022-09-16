@@ -1,0 +1,6 @@
+server:
+  port: ":8080"
+  workingDir: /Users/dongge.tan/Dev/workspace/GOPATH/github.com/Kyligence/xuanwu-log/test
+data:
+  loki:
+    address: http://aafdd592dddec49ed8bf3c35d9d538c9-577636166.us-west-2.elb.amazonaws.com:80
