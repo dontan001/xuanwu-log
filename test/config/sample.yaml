@@ -1,6 +1,6 @@
 data:
   loki:
-    address: http://loki-loki-distributed-querier:3100
+    address: http://aafdd592dddec49ed8bf3c35d9d538c9-577636166.us-west-2.elb.amazonaws.com:80
 queries:
   - query: "{job=\"fluent-bit\",app=\"yinglong\"}"
     schedule:
