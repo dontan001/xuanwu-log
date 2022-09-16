@@ -28,3 +28,13 @@ spec:
             limits:
               memory: "128Mi"
               cpu: "1"
+          args:
+          - -config.file=/etc/config/config.yaml
+          volumeMounts:
+          - name: config
+            mountPath: /etc/config
+      volumes:
+      - name: config
+        configMap:
+          name: api
+          defaultMode: 420
