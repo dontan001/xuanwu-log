@@ -44,6 +44,6 @@ func main() {
 		return d
 	}(server)
 
+	log.Printf("Log API server start...")
 	api.Start(server, data)
-	log.Printf("Log API server started.")
 }
