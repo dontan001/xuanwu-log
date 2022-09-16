@@ -6,6 +6,7 @@ import (
 	"math"
 	"time"
 
+	cliClient "github.com/grafana/loki/pkg/logcli/client"
 	"github.com/grafana/loki/pkg/logcli/output"
 	"github.com/grafana/loki/pkg/logcli/query"
 
@@ -52,8 +53,7 @@ func newQuery(q string, start, end time.Time) *query.Query {
 	return qry
 }
 
-// QueryV2 v2
-func QueryV2(q string, start, end time.Time, result io.Writer) error {
+func QueryV2(client cliClient.Client, q string, start, end time.Time, result io.Writer) error {
 	defer util.TimeMeasure("queryV2")()
 
 	rangeQuery := newQueryV2(q, start, end)
@@ -69,7 +69,7 @@ func QueryV2(q string, start, end time.Time, result io.Writer) error {
 		return err
 	}
 
-	err = rangeQuery.DoQuery(queryClient, out, false)
+	err = rangeQuery.DoQuery(client, out, false)
 	if err != nil {
 		log.Printf("DoQuery failed: %s", err)
 		return err
