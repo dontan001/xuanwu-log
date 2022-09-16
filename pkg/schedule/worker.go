@@ -19,6 +19,7 @@ type BackupRequest struct {
 	End           time.Time
 	ArchiveConfig ArchiveConfig
 
+	Data  *data.Data
 	Store *storage.Store
 }
 
@@ -58,7 +59,7 @@ func (req BackupRequest) Do() error {
 		}
 	}()
 
-	err = data.Extract(req.Query, req.Start, req.End, result)
+	err = req.Data.Extract(req.Query, req.Start, req.End, result)
 	if err != nil {
 		return err
 	}

@@ -5,6 +5,8 @@ import (
 	"testing"
 
 	"github.com/aws/aws-sdk-go/aws/endpoints"
+
+	"github.com/kyligence/xuanwu-log/pkg/data"
 	"github.com/kyligence/xuanwu-log/pkg/storage"
 	"github.com/kyligence/xuanwu-log/pkg/storage/s3"
 )
@@ -36,7 +38,14 @@ var (
 		},
 	}
 
-	store = func() *storage.Store {
+	testData = func() *data.Data {
+		d := &data.Data{Conf: testConf.Data}
+		d.Setup()
+
+		return d
+	}()
+
+	testStore = func() *storage.Store {
 		s := &storage.Store{
 			Config: &s3.S3Config{
 				Bucket: testConf.Archive.S3.Bucket,
@@ -57,7 +66,7 @@ func TestEnsure(t *testing.T) {
 func TestGenerateRequests(t *testing.T) {
 	for _, query := range testConf.Queries {
 		query.ensure(testConf)
-		requests := query.generateRequests(store)
+		requests := query.generateRequests(testData, testStore)
 
 		log.Printf("total: %d", len(requests))
 		for idx, request := range requests {
@@ -69,7 +78,7 @@ func TestGenerateRequests(t *testing.T) {
 func TestSubmit(t *testing.T) {
 	for _, query := range testConf.Queries {
 		query.ensure(testConf)
-		requests := query.generateRequests(store)
+		requests := query.generateRequests(testData, testStore)
 		submit(requests)
 	}
 }
