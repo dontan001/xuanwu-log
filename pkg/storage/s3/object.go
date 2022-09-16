@@ -86,7 +86,7 @@ func (s *S3Store) GetObjects() error {
 
 	objects := []string{}
 	err := s.client.S3.ListObjectsPagesWithContext(ctx, &s3.ListObjectsInput{
-		Bucket: aws.String(bucket),
+		Bucket: aws.String(s.Config.Bucket),
 	}, func(p *s3.ListObjectsOutput, lastPage bool) bool {
 		for _, o := range p.Contents {
 			objects = append(objects, aws.StringValue(o.Key))
@@ -94,7 +94,7 @@ func (s *S3Store) GetObjects() error {
 		return true // continue paging
 	})
 	if err != nil {
-		return fmt.Errorf("failed to list objects for bucket, %s, %v", bucket, err)
+		return fmt.Errorf("failed to list objects for bucket, %s, %v", s.Config.Bucket, err)
 	}
 
 	for idx, obj := range objects {
@@ -105,7 +105,7 @@ func (s *S3Store) GetObjects() error {
 
 func (s *S3Store) HeadObject(remotePath string) (*s3.HeadObjectOutput, error) {
 	result, err := s.client.S3.HeadObject(&s3.HeadObjectInput{
-		Bucket: aws.String(bucket),
+		Bucket: aws.String(s.Config.Bucket),
 		Key:    aws.String(remotePath),
 	})
 	if err != nil {
@@ -130,7 +130,7 @@ func (s *S3Store) GetObject(remotePath, destFile string) error {
 	defer file.Close()
 
 	objectMeta, err := s.client.S3.HeadObject(&s3.HeadObjectInput{
-		Bucket: aws.String(bucket),
+		Bucket: aws.String(s.Config.Bucket),
 		Key:    aws.String(remotePath),
 	})
 	if err != nil {
@@ -141,7 +141,7 @@ func (s *S3Store) GetObject(remotePath, destFile string) error {
 	defer util.TimeMeasureRate("GetObject", *size)()
 	numBytes, err := s.client.S3Downloader.Download(file,
 		&s3.GetObjectInput{
-			Bucket: aws.String(bucket),
+			Bucket: aws.String(s.Config.Bucket),
 			Key:    aws.String(remotePath),
 		}, func(downloader *s3manager.Downloader) {
 			downloader.PartSize = s3manager.DefaultDownloadPartSize * 10
@@ -154,7 +154,7 @@ func (s *S3Store) GetObject(remotePath, destFile string) error {
 		return fmt.Errorf("unable to download file %q, %v", remotePath, err)
 	}
 
-	log.Printf("Successfully downloaded %q from bucket %q with %d bytes \n", file.Name(), bucket, numBytes)
+	log.Printf("Successfully downloaded %q from bucket %q with %d bytes \n", file.Name(), s.Config.Bucket, numBytes)
 	return nil
 }
 
@@ -172,7 +172,7 @@ func (s *S3Store) PutObject(remotePath, srcFile string) error {
 
 	defer util.TimeMeasureRate("PutObject", info.Size())()
 	_, err = s.client.S3Uploader.Upload(&s3manager.UploadInput{
-		Bucket: aws.String(bucket),
+		Bucket: aws.String(s.Config.Bucket),
 		Key:    aws.String(remotePath),
 		Body:   file,
 	}, func(uploader *s3manager.Uploader) {
@@ -191,16 +191,16 @@ func (s *S3Store) PutObject(remotePath, srcFile string) error {
 		uploader.PartSize = partSize
 	})
 	if err != nil {
-		return fmt.Errorf("unable to upload %s to %s, %v", srcFile, bucket, err)
+		return fmt.Errorf("unable to upload %s to %s, %v", srcFile, s.Config.Bucket, err)
 	}
 
-	log.Printf("Successfully uploaded %q to %q\n", srcFile, bucket)
+	log.Printf("Successfully uploaded %q to %q\n", srcFile, s.Config.Bucket)
 	return nil
 }
 
 func (s *S3Store) DelObject(remotePath string) error {
 	input := &s3.DeleteObjectInput{
-		Bucket: aws.String(bucket),
+		Bucket: aws.String(s.Config.Bucket),
 		Key:    aws.String(remotePath),
 	}
 
