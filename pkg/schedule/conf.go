@@ -1,6 +1,7 @@
 package schedule
 
 import (
+	"github.com/kyligence/xuanwu-log/pkg/data"
 	"github.com/kyligence/xuanwu-log/pkg/storage/s3"
 )
 
@@ -16,21 +17,9 @@ const (
 )
 
 type BackupConf struct {
-	Data    *Data        `yaml:"data"`
-	Queries []*QueryConf `yaml:"queries"`
-	Archive *Archive     `yaml:"archive"`
-}
-
-type Data struct {
-	Loki *Loki `yaml:"loki"`
-}
-
-type Loki struct {
-	Address string `yaml:"address"`
-}
-
-func (c *Data) Validate() error {
-	return nil
+	Data    *data.DataConf `yaml:"data"`
+	Queries []*QueryConf   `yaml:"queries"`
+	Archive *Archive       `yaml:"archive"`
 }
 
 type QueryConf struct {
