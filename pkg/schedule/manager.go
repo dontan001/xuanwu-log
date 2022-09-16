@@ -9,6 +9,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/kyligence/xuanwu-log/pkg/storage"
 	"github.com/kyligence/xuanwu-log/pkg/util"
 )
 
@@ -35,10 +36,18 @@ func Run(backupConf *BackupConf) {
 		},
 	}*/
 
+	// dataClient
+	// storageClient
+	store := func(c *BackupConf) *storage.Store {
+		s := &storage.Store{Config: c.Archive.S3}
+		s.Setup()
+		return s
+	}(backupConf)
+
 	for _, queryConf := range backupConf.Queries {
 		log.Printf("Proceed qry: %q", queryConf.Query)
 		queryConf.ensure(backupConf)
-		requests := queryConf.generateRequests()
+		requests := queryConf.generateRequests(store)
 
 		log.Printf("Requests total: %d", len(requests))
 		submit(requests)
@@ -69,7 +78,7 @@ func (conf *QueryConf) ensure(backupConf *BackupConf) {
 	}
 }
 
-func (conf *QueryConf) generateRequests() (requests []BackupRequest) {
+func (conf *QueryConf) generateRequests(store *storage.Store) (requests []BackupRequest) {
 	t := time.Now()
 	log.Printf("Checked at: %s", t.Format(time.RFC3339Nano))
 
@@ -91,6 +100,8 @@ func (conf *QueryConf) generateRequests() (requests []BackupRequest) {
 				WorkingDir:   filepath.Join(conf.Archive.WorkingDir, conf.Archive.SubDir),
 				ObjectPrefix: filepath.Join(conf.Archive.SubDir, archiveName),
 			},
+
+			Store: store,
 		})
 		lastBackup = start
 	}

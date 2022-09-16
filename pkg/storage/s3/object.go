@@ -27,7 +27,7 @@ const (
 	downloadConcurrency = s3manager.DefaultDownloadConcurrency
 )
 
-var (
+/*var (
 	cfg = client.S3Config{
 		Level:           logLevel,
 		Insecure:        true,
@@ -37,12 +37,38 @@ var (
 	}
 
 	objectClient, _ = client.NewS3ObjectClient(cfg)
-)
+)*/
 
-func GetBuckets() error {
+type S3Config struct {
+	Bucket string `yaml:"bucket"`
+	Region string `yaml:"region"`
+}
+
+type S3Store struct {
+	Config *S3Config
+	client *client.S3ObjectClient
+}
+
+func (s *S3Store) Setup() {
+	if s.Config != nil {
+		cfg := client.S3Config{
+			Level:           logLevel,
+			Insecure:        true,
+			Bucket:          s.Config.Bucket,
+			Region:          s.Config.Region,
+			AccessKeyID:     AccessKeyID,
+			SecretAccessKey: flagext.Secret{Value: SecretAccessKey},
+		}
+
+		objectClient, _ := client.NewS3ObjectClient(cfg)
+		s.client = objectClient
+	}
+}
+
+func (s *S3Store) GetBuckets() error {
 	ctx := context.Background()
 
-	result, err := objectClient.S3.ListBucketsWithContext(ctx, nil)
+	result, err := s.client.S3.ListBucketsWithContext(ctx, nil)
 	if err != nil {
 		log.Printf("Unable to list buckets, %v", err)
 	}
@@ -55,11 +81,11 @@ func GetBuckets() error {
 	return nil
 }
 
-func GetObjects() error {
+func (s *S3Store) GetObjects() error {
 	ctx := context.Background()
 
 	objects := []string{}
-	err := objectClient.S3.ListObjectsPagesWithContext(ctx, &s3.ListObjectsInput{
+	err := s.client.S3.ListObjectsPagesWithContext(ctx, &s3.ListObjectsInput{
 		Bucket: aws.String(bucket),
 	}, func(p *s3.ListObjectsOutput, lastPage bool) bool {
 		for _, o := range p.Contents {
@@ -77,8 +103,8 @@ func GetObjects() error {
 	return nil
 }
 
-func HeadObject(remotePath string) (*s3.HeadObjectOutput, error) {
-	result, err := objectClient.S3.HeadObject(&s3.HeadObjectInput{
+func (s *S3Store) HeadObject(remotePath string) (*s3.HeadObjectOutput, error) {
+	result, err := s.client.S3.HeadObject(&s3.HeadObjectInput{
 		Bucket: aws.String(bucket),
 		Key:    aws.String(remotePath),
 	})
@@ -95,7 +121,7 @@ func HeadObject(remotePath string) (*s3.HeadObjectOutput, error) {
 	return result, nil
 }
 
-func GetObject(remotePath, destFile string) error {
+func (s *S3Store) GetObject(remotePath, destFile string) error {
 	file, err := os.Create(destFile)
 	if err != nil {
 		return fmt.Errorf("unable to open file %s, %v", destFile, err)
@@ -103,7 +129,7 @@ func GetObject(remotePath, destFile string) error {
 
 	defer file.Close()
 
-	objectMeta, err := objectClient.S3.HeadObject(&s3.HeadObjectInput{
+	objectMeta, err := s.client.S3.HeadObject(&s3.HeadObjectInput{
 		Bucket: aws.String(bucket),
 		Key:    aws.String(remotePath),
 	})
@@ -113,7 +139,7 @@ func GetObject(remotePath, destFile string) error {
 	size := objectMeta.ContentLength
 
 	defer util.TimeMeasureRate("GetObject", *size)()
-	numBytes, err := objectClient.S3Downloader.Download(file,
+	numBytes, err := s.client.S3Downloader.Download(file,
 		&s3.GetObjectInput{
 			Bucket: aws.String(bucket),
 			Key:    aws.String(remotePath),
@@ -132,7 +158,7 @@ func GetObject(remotePath, destFile string) error {
 	return nil
 }
 
-func PutObject(remotePath, srcFile string) error {
+func (s *S3Store) PutObject(remotePath, srcFile string) error {
 	file, err := os.Open(srcFile)
 	if err != nil {
 		return fmt.Errorf("unable to open file %v", err)
@@ -145,7 +171,7 @@ func PutObject(remotePath, srcFile string) error {
 	}
 
 	defer util.TimeMeasureRate("PutObject", info.Size())()
-	_, err = objectClient.S3Uploader.Upload(&s3manager.UploadInput{
+	_, err = s.client.S3Uploader.Upload(&s3manager.UploadInput{
 		Bucket: aws.String(bucket),
 		Key:    aws.String(remotePath),
 		Body:   file,
@@ -172,13 +198,13 @@ func PutObject(remotePath, srcFile string) error {
 	return nil
 }
 
-func DelObject(remotePath string) error {
+func (s *S3Store) DelObject(remotePath string) error {
 	input := &s3.DeleteObjectInput{
 		Bucket: aws.String(bucket),
 		Key:    aws.String(remotePath),
 	}
 
-	_, err := objectClient.S3.DeleteObject(input)
+	_, err := s.client.S3.DeleteObject(input)
 	if err != nil {
 		if aerr, ok := err.(awserr.Error); ok {
 			if aerr.Code() == "NotFound" {

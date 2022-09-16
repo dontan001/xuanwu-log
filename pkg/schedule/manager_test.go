@@ -3,6 +3,10 @@ package schedule
 import (
 	"log"
 	"testing"
+
+	"github.com/aws/aws-sdk-go/aws/endpoints"
+	"github.com/kyligence/xuanwu-log/pkg/storage"
+	"github.com/kyligence/xuanwu-log/pkg/storage/s3"
 )
 
 var (
@@ -25,8 +29,23 @@ var (
 			Type:        DefaultType,
 			WorkingDir:  DefaultWorkingDir,
 			NamePattern: "%s.log",
+			S3: &s3.S3Config{
+				Bucket: "donggetest",
+				Region: endpoints.UsWest2RegionID,
+			},
 		},
 	}
+
+	store = func() *storage.Store {
+		s := &storage.Store{
+			Config: &s3.S3Config{
+				Bucket: testConf.Archive.S3.Bucket,
+				Region: testConf.Archive.S3.Region},
+		}
+		s.Setup()
+
+		return s
+	}()
 )
 
 func TestEnsure(t *testing.T) {
@@ -38,7 +57,7 @@ func TestEnsure(t *testing.T) {
 func TestGenerateRequests(t *testing.T) {
 	for _, query := range testConf.Queries {
 		query.ensure(testConf)
-		requests := query.generateRequests()
+		requests := query.generateRequests(store)
 
 		log.Printf("total: %d", len(requests))
 		for idx, request := range requests {
@@ -50,7 +69,7 @@ func TestGenerateRequests(t *testing.T) {
 func TestSubmit(t *testing.T) {
 	for _, query := range testConf.Queries {
 		query.ensure(testConf)
-		requests := query.generateRequests()
+		requests := query.generateRequests(store)
 		submit(requests)
 	}
 }

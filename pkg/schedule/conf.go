@@ -1,5 +1,9 @@
 package schedule
 
+import (
+	"github.com/kyligence/xuanwu-log/pkg/storage/s3"
+)
+
 const (
 	DefaultInterval = 3
 	DefaultMax      = 1 * 8
@@ -42,9 +46,10 @@ type Schedule struct {
 }
 
 type Archive struct {
-	Type        string `yaml:"type"`
-	WorkingDir  string `yaml:"workingDir"`
-	NamePattern string `yaml:"namePattern"`
+	Type        string       `yaml:"type"`
+	WorkingDir  string       `yaml:"workingDir"`
+	NamePattern string       `yaml:"namePattern"`
+	S3          *s3.S3Config `yaml:"s3"`
 }
 
 type ArchiveQuery struct {

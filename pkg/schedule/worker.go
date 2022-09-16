@@ -18,6 +18,8 @@ type BackupRequest struct {
 	Start         time.Time
 	End           time.Time
 	ArchiveConfig ArchiveConfig
+
+	Store *storage.Store
 }
 
 type ArchiveConfig struct {
@@ -31,7 +33,7 @@ type ArchiveConfig struct {
 func (req BackupRequest) Do() error {
 	log.Printf("Proceed req: %s", req.String())
 
-	exist, err := storage.Exist(req.ArchiveConfig.ObjectPrefix)
+	exist, err := req.Store.Exist(req.ArchiveConfig.ObjectPrefix)
 	if err != nil {
 		return err
 	}
@@ -69,7 +71,7 @@ func (req BackupRequest) Do() error {
 	if trace {
 		return nil
 	}
-	err = storage.Upload(req.ArchiveConfig.ObjectPrefix, fileNameArchive)
+	err = req.Store.Upload(req.ArchiveConfig.ObjectPrefix, fileNameArchive)
 	if err != nil {
 		return err
 	}

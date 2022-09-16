@@ -9,15 +9,25 @@ const (
 	WorkingDir = "/Users/dongge.tan/Dev/workspace/GOPATH/github.com/Kyligence/xuanwu-log/test"
 )
 
+var testStore = setupStore()
+
+func setupStore() *S3Store {
+	s := &S3Store{
+		Config: &S3Config{Bucket: bucket, Region: region}}
+
+	s.Setup()
+	return s
+}
+
 func TestGetBuckets(t *testing.T) {
-	err := GetBuckets()
+	err := testStore.GetBuckets()
 	if err != nil {
 		t.Logf("%s", err)
 	}
 }
 
 func TestGetObjects(t *testing.T) {
-	err := GetObjects()
+	err := testStore.GetObjects()
 	if err != nil {
 		t.Logf("%s", err)
 	}
@@ -25,7 +35,7 @@ func TestGetObjects(t *testing.T) {
 
 func TestHeadObject(t *testing.T) {
 	remotePath := "index/loki_index_19240/loki-loki-distributed-ingester-0-1662344787333739953-1662348480.gz"
-	_, err := HeadObject(remotePath)
+	_, err := testStore.HeadObject(remotePath)
 	if err != nil {
 		t.Logf("%s", err)
 	}
@@ -33,7 +43,7 @@ func TestHeadObject(t *testing.T) {
 
 func TestHeadObject404(t *testing.T) {
 	remotePath := "index/loki_index_19240/loki-loki-distributed-ingester-0-1662344787333739953-xxxx.gz"
-	_, err := HeadObject(remotePath)
+	_, err := testStore.HeadObject(remotePath)
 	if err != nil {
 		t.Fatalf("%s", err)
 	}
@@ -42,7 +52,7 @@ func TestHeadObject404(t *testing.T) {
 func TestGetObject(t *testing.T) {
 	remotePath := "index/loki_index_19240/loki-loki-distributed-ingester-0-1662344787333739953-1662348480.gz"
 	fileName := filepath.Join(WorkingDir, "tmp.txt")
-	err := GetObject(remotePath, fileName)
+	err := testStore.GetObject(remotePath, fileName)
 	if err != nil {
 		t.Logf("%s", err)
 	}
@@ -51,7 +61,7 @@ func TestGetObject(t *testing.T) {
 func TestGetObjectBig(t *testing.T) {
 	remotePath := "test/test1g.txt"
 	fileName := filepath.Join(WorkingDir, "tmp.txt")
-	err := GetObject(remotePath, fileName)
+	err := testStore.GetObject(remotePath, fileName)
 	if err != nil {
 		t.Logf("%s", err)
 	}
@@ -61,7 +71,7 @@ func TestPutObject(t *testing.T) {
 	fileName := filepath.Join(WorkingDir, "README.md")
 	remotePath := "test/README.md"
 
-	err := PutObject(remotePath, fileName)
+	err := testStore.PutObject(remotePath, fileName)
 	if err != nil {
 		t.Logf("%s", err)
 	}
@@ -71,7 +81,7 @@ func TestPutObjectBig(t *testing.T) {
 	fileName := filepath.Join(WorkingDir, "test1g.txt")
 	remotePath := "test/test1g.txt"
 
-	err := PutObject(remotePath, fileName)
+	err := testStore.PutObject(remotePath, fileName)
 	if err != nil {
 		t.Logf("%s", err)
 	}
@@ -80,7 +90,7 @@ func TestPutObjectBig(t *testing.T) {
 func TestDelObject(t *testing.T) {
 	remotePath := "test/client.go"
 
-	err := DelObject(remotePath)
+	err := testStore.DelObject(remotePath)
 	if err != nil {
 		t.Logf("%s", err)
 	}
@@ -89,7 +99,7 @@ func TestDelObject(t *testing.T) {
 func TestDelObject404(t *testing.T) {
 	remotePath := "test/xxx.go"
 
-	err := DelObject(remotePath)
+	err := testStore.DelObject(remotePath)
 	if err != nil {
 		t.Logf("%s", err)
 	}
