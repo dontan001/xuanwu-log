@@ -14,8 +14,8 @@ import (
 	"github.com/kyligence/xuanwu-log/pkg/util"
 )
 
-func Run(backupConf *Backup) {
-	/*backupConf := &Backup{
+func Run(backup *Backup) {
+	/*backup := &Backup{
 		Queries: []*QueryConf{
 			{
 				Query: "{job=\"fluent-bit\",app=\"yinglong\"}",
@@ -41,17 +41,17 @@ func Run(backupConf *Backup) {
 		d := &data.Data{Conf: c.Data}
 		d.Setup()
 		return d
-	}(backupConf)
+	}(backup)
 
 	store := func(c *Backup) *storage.Store {
 		s := &storage.Store{Config: c.Archive.S3}
 		s.Setup()
 		return s
-	}(backupConf)
+	}(backup)
 
-	for _, queryConf := range backupConf.Queries {
+	for _, queryConf := range backup.Queries {
 		log.Printf("Proceed qry: %q", queryConf.Query)
-		queryConf.Ensure(BACKUP, backupConf)
+		queryConf.Ensure(BACKUP, backup)
 		requests := queryConf.generateRequests(data, store)
 
 		log.Printf("Requests total: %d", len(requests))
@@ -59,18 +59,18 @@ func Run(backupConf *Backup) {
 	}
 }
 
-func (conf *QueryConf) Ensure(sub string, backupConf *Backup) {
+func (conf *QueryConf) Ensure(sub string, backup *Backup) {
 	if conf.Archive == nil {
 		conf.Archive = &ArchiveQuery{}
 	}
 	if conf.Archive.WorkingDir == "" {
-		conf.Archive.WorkingDir = backupConf.Archive.WorkingDir
+		conf.Archive.WorkingDir = backup.Archive.WorkingDir
 	}
 	if conf.Archive.Type == "" {
-		conf.Archive.Type = backupConf.Archive.Type
+		conf.Archive.Type = backup.Archive.Type
 	}
 	if conf.Archive.NamePattern == "" {
-		conf.Archive.NamePattern = backupConf.Archive.NamePattern
+		conf.Archive.NamePattern = backup.Archive.NamePattern
 	}
 
 	conf.Hash = fmt.Sprintf("%d", util.Hash(conf.Query))

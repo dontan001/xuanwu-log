@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	testConf = &Backup{
+	testBackup = &Backup{
 		Queries: []*QueryConf{
 			{
 				Query: "{job=\"fluent-bit\",app=\"yinglong\"}",
@@ -39,7 +39,7 @@ var (
 	}
 
 	testData = func() *data.Data {
-		d := &data.Data{Conf: testConf.Data}
+		d := &data.Data{Conf: testBackup.Data}
 		d.Setup()
 
 		return d
@@ -48,8 +48,8 @@ var (
 	testStore = func() *storage.Store {
 		s := &storage.Store{
 			Config: &s3.S3Config{
-				Bucket: testConf.Archive.S3.Bucket,
-				Region: testConf.Archive.S3.Region},
+				Bucket: testBackup.Archive.S3.Bucket,
+				Region: testBackup.Archive.S3.Region},
 		}
 		s.Setup()
 
@@ -58,14 +58,14 @@ var (
 )
 
 func TestEnsure(t *testing.T) {
-	for _, query := range testConf.Queries {
-		query.Ensure(BACKUP, testConf)
+	for _, query := range testBackup.Queries {
+		query.Ensure(BACKUP, testBackup)
 	}
 }
 
 func TestGenerateRequests(t *testing.T) {
-	for _, query := range testConf.Queries {
-		query.Ensure(BACKUP, testConf)
+	for _, query := range testBackup.Queries {
+		query.Ensure(BACKUP, testBackup)
 		requests := query.generateRequests(testData, testStore)
 
 		log.Printf("total: %d", len(requests))
@@ -76,8 +76,8 @@ func TestGenerateRequests(t *testing.T) {
 }
 
 func TestSubmit(t *testing.T) {
-	for _, query := range testConf.Queries {
-		query.Ensure(BACKUP, testConf)
+	for _, query := range testBackup.Queries {
+		query.Ensure(BACKUP, testBackup)
 		requests := query.generateRequests(testData, testStore)
 		submit(requests)
 	}
