@@ -8,11 +8,12 @@ import (
 	"os"
 
 	"github.com/kyligence/xuanwu-log/pkg/api"
-	"github.com/kyligence/xuanwu-log/pkg/data"
+	"github.com/kyligence/xuanwu-log/pkg/schedule"
 	yaml "gopkg.in/yaml.v2"
 )
 
 var configFile = flag.String("config.file", "/etc/config/config.yaml", "api config options")
+var backupFile = flag.String("config.backup", "", "backup config options")
 
 func main() {
 	log.SetOutput(os.Stderr)
@@ -38,12 +39,29 @@ func main() {
 		panic(err)
 	}
 
-	data := func(s *api.Server) *data.Data {
-		d := &data.Data{Conf: s.Data}
-		d.Setup()
-		return d
-	}(server)
+	backup, err := func(fileName string) (*schedule.BackupConf, error) {
+		if fileName == "" {
+			return nil, nil
+		}
 
-	log.Printf("Log API server start...")
-	api.Start(server, data)
+		log.Printf("Load backup from %q", fileName)
+		bytes, err := ioutil.ReadFile(fileName)
+		if err != nil {
+			return nil, err
+		}
+
+		var conf schedule.BackupConf
+		err = yaml.Unmarshal(bytes, &conf)
+		if err != nil {
+			return nil, fmt.Errorf("parse backup file %q error: %v", fileName, err)
+		}
+
+		return &conf, nil
+	}(*backupFile)
+	if err != nil {
+		panic(err)
+	}
+
+	log.Printf("Log API server starting...")
+	api.Start(server, backup)
 }
