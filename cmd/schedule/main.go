@@ -17,7 +17,7 @@ func main() {
 	log.SetOutput(os.Stderr)
 	flag.Parse()
 
-	var config *schedule.BackupConf
+	var config *schedule.Backup
 	config, err := loadConf(*configFile)
 	if err != nil {
 		panic(err)
@@ -31,14 +31,14 @@ func main() {
 	schedule.Run(config)
 }
 
-func loadConf(fileName string) (*schedule.BackupConf, error) {
+func loadConf(fileName string) (*schedule.Backup, error) {
 	log.Printf("Load config from %q", fileName)
 	bytes, err := ioutil.ReadFile(fileName)
 	if err != nil {
 		return nil, err
 	}
 
-	var conf schedule.BackupConf
+	var conf schedule.Backup
 	err = yaml.Unmarshal(bytes, &conf)
 	if err != nil {
 		return nil, fmt.Errorf("parse config file %q error: %v", fileName, err)

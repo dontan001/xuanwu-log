@@ -14,8 +14,8 @@ import (
 	"github.com/kyligence/xuanwu-log/pkg/util"
 )
 
-func Run(backupConf *BackupConf) {
-	/*backupConf := &BackupConf{
+func Run(backupConf *Backup) {
+	/*backupConf := &Backup{
 		Queries: []*QueryConf{
 			{
 				Query: "{job=\"fluent-bit\",app=\"yinglong\"}",
@@ -37,13 +37,13 @@ func Run(backupConf *BackupConf) {
 		},
 	}*/
 
-	data := func(c *BackupConf) *data.Data {
+	data := func(c *Backup) *data.Data {
 		d := &data.Data{Conf: c.Data}
 		d.Setup()
 		return d
 	}(backupConf)
 
-	store := func(c *BackupConf) *storage.Store {
+	store := func(c *Backup) *storage.Store {
 		s := &storage.Store{Config: c.Archive.S3}
 		s.Setup()
 		return s
@@ -59,7 +59,7 @@ func Run(backupConf *BackupConf) {
 	}
 }
 
-func (conf *QueryConf) Ensure(sub string, backupConf *BackupConf) {
+func (conf *QueryConf) Ensure(sub string, backupConf *Backup) {
 	if conf.Archive == nil {
 		conf.Archive = &ArchiveQuery{}
 	}

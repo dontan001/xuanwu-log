@@ -18,7 +18,7 @@ const (
 	BACKUP = "backup"
 )
 
-type BackupConf struct {
+type Backup struct {
 	Data    *data.DataConf `yaml:"data"`
 	Queries []*QueryConf   `yaml:"queries"`
 	Archive *Archive       `yaml:"archive"`
@@ -52,6 +52,6 @@ func (c *QueryConf) Validate() error {
 	return nil
 }
 
-func (c *BackupConf) Validate() error {
+func (c *Backup) Validate() error {
 	return nil
 }

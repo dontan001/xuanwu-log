@@ -39,7 +39,7 @@ func main() {
 		panic(err)
 	}
 
-	backup, err := func(fileName string) (*schedule.BackupConf, error) {
+	backup, err := func(fileName string) (*schedule.Backup, error) {
 		if fileName == "" {
 			return nil, nil
 		}
@@ -50,7 +50,7 @@ func main() {
 			return nil, err
 		}
 
-		var conf schedule.BackupConf
+		var conf schedule.Backup
 		err = yaml.Unmarshal(bytes, &conf)
 		if err != nil {
 			return nil, fmt.Errorf("parse backup file %q error: %v", fileName, err)

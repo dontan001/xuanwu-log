@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	testConf = &BackupConf{
+	testConf = &Backup{
 		Queries: []*QueryConf{
 			{
 				Query: "{job=\"fluent-bit\",app=\"yinglong\"}",
