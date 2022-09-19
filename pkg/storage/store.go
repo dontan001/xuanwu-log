@@ -29,6 +29,10 @@ func (store *Store) Upload(remotePath, srcFile string) error {
 	return store.S3.PutObject(remotePath, srcFile)
 }
 
+func (store *Store) Download(remotePath, dstFile string) error {
+	return store.S3.GetObject(remotePath, dstFile)
+}
+
 func (store *Store) Exist(remotePath string) (bool, error) {
 	obj, err := store.S3.HeadObject(remotePath)
 	if err != nil {
