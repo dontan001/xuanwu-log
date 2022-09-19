@@ -59,13 +59,13 @@ var (
 
 func TestEnsure(t *testing.T) {
 	for _, query := range testConf.Queries {
-		query.ensure(testConf)
+		query.Ensure(BACKUP, testConf)
 	}
 }
 
 func TestGenerateRequests(t *testing.T) {
 	for _, query := range testConf.Queries {
-		query.ensure(testConf)
+		query.Ensure(BACKUP, testConf)
 		requests := query.generateRequests(testData, testStore)
 
 		log.Printf("total: %d", len(requests))
@@ -77,7 +77,7 @@ func TestGenerateRequests(t *testing.T) {
 
 func TestSubmit(t *testing.T) {
 	for _, query := range testConf.Queries {
-		query.ensure(testConf)
+		query.Ensure(BACKUP, testConf)
 		requests := query.generateRequests(testData, testStore)
 		submit(requests)
 	}

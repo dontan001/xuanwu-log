@@ -51,7 +51,7 @@ func Run(backupConf *BackupConf) {
 
 	for _, queryConf := range backupConf.Queries {
 		log.Printf("Proceed qry: %q", queryConf.Query)
-		queryConf.ensure(backupConf)
+		queryConf.Ensure(BACKUP, backupConf)
 		requests := queryConf.generateRequests(data, store)
 
 		log.Printf("Requests total: %d", len(requests))
@@ -59,7 +59,7 @@ func Run(backupConf *BackupConf) {
 	}
 }
 
-func (conf *QueryConf) ensure(backupConf *BackupConf) {
+func (conf *QueryConf) Ensure(sub string, backupConf *BackupConf) {
 	if conf.Archive == nil {
 		conf.Archive = &ArchiveQuery{}
 	}
@@ -74,7 +74,7 @@ func (conf *QueryConf) ensure(backupConf *BackupConf) {
 	}
 
 	conf.Hash = fmt.Sprintf("%d", util.Hash(conf.Query))
-	conf.Archive.SubDir = filepath.Join("backup", conf.Hash)
+	conf.Archive.SubDir = filepath.Join(sub, conf.Hash)
 
 	fDir := filepath.Join(conf.Archive.WorkingDir, conf.Archive.SubDir)
 	err := os.MkdirAll(fDir, os.ModePerm)

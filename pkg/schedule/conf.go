@@ -14,6 +14,8 @@ const (
 
 	PARALLELIZE = 4
 	trace       = true
+
+	BACKUP = "backup"
 )
 
 type BackupConf struct {
