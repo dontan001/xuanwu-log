@@ -30,11 +30,18 @@ spec:
               cpu: "1"
           args:
           - -config.file=/etc/config/config.yaml
+          - -config.backup=/etc/backup/config.yaml
           volumeMounts:
           - name: config
             mountPath: /etc/config
+          - name: configBackup
+            mountPath: /etc/backup
       volumes:
       - name: config
         configMap:
           name: api
+          defaultMode: 420
+      - name: configBackup
+        configMap:
+          name: backup
           defaultMode: 420
