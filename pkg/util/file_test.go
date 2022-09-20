@@ -1,17 +1,17 @@
 package util
 
 import (
-	"fmt"
+	"path/filepath"
 	"testing"
 )
 
 const (
-	BASE = "/Users/dongge.tan/Dev/workspace/GOPATH/github.com/Kyligence/xuanwu-log/%s"
+	WorkingDir = "/Users/dongge.tan/Dev/workspace/GOPATH/github.com/Kyligence/xuanwu-log"
 )
 
 func TestZipSource(t *testing.T) {
-	fs := fmt.Sprintf(BASE, "pkg/util/file.go")
-	ft := fmt.Sprintf(BASE, "pkg/util/file.go.zip")
+	fs := filepath.Join(WorkingDir, "pkg/util/file.go")
+	ft := filepath.Join(WorkingDir, "pkg/util/file.go.zip")
 
 	if err := ZipSource(fs, ft); err != nil {
 		t.Fatal(err)
@@ -21,10 +21,19 @@ func TestZipSource(t *testing.T) {
 func TestZipSourceBig(t *testing.T) {
 	defer TimeMeasure("zip")()
 
-	fs := fmt.Sprintf(BASE, "test/test50g.txt")
-	ft := fmt.Sprintf(BASE, "test/test50g.txt.zip")
+	fs := filepath.Join(WorkingDir, "test/test50g.txt")
+	ft := filepath.Join(WorkingDir, "test/test50g.txt.zip")
 
 	if err := ZipSource(fs, ft); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestConcatenate(t *testing.T) {
+	ft := filepath.Join(WorkingDir, "test/t1.txt")
+	fs := filepath.Join(WorkingDir, "test/t2.txt")
+
+	if err := Concatenate(ft, fs); err != nil {
 		t.Fatal(err)
 	}
 }

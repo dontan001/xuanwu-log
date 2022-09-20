@@ -7,6 +7,30 @@ import (
 	"path/filepath"
 )
 
+func Concatenate(merged, file string) error {
+	target, err := os.OpenFile(merged, os.O_WRONLY|os.O_APPEND, 0644)
+	if err != nil {
+		return err
+	}
+	defer target.Close()
+
+	src, err := os.Open(file)
+	if err != nil {
+		return err
+	}
+	defer src.Close()
+
+	target.WriteString("\n")
+
+	_, err = io.Copy(target, src)
+	return nil
+}
+
+func UnCompress(source, target string) error {
+
+	return nil
+}
+
 func Compress(source, target string) error {
 	return ZipSource(source, target)
 }
