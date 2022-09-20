@@ -113,7 +113,7 @@ func Start(server *Server, backup *schedule.Backup) {
 		log.Printf("parsed: query=%s, start=%s [ %d ], end=%s [ %d ]", qry,
 			startParsed.Format(time.RFC3339Nano), startParsed.UnixNano(), endParsed.Format(time.RFC3339Nano), endParsed.UnixNano())
 
-		fileName := "tmp.txt"
+		fileName := util.RandomName()
 		fileNameFull := filepath.Join(server.Conf.WorkingDir, fileName)
 		fileNameArchive := fmt.Sprintf("%s.zip", fileName)
 		fileNameArchiveFull := filepath.Join(server.Conf.WorkingDir, fileNameArchive)

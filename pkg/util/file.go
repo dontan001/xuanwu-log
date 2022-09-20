@@ -8,6 +8,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/google/uuid"
 )
 
 func Concatenate(merged, other string) error {
@@ -37,10 +39,10 @@ func Concatenate(merged, other string) error {
 }
 
 func Compress(source, target string) error {
-	return ZipSource(source, target)
+	return zipSource(source, target)
 }
 
-func ZipSource(source, target string) error {
+func zipSource(source, target string) error {
 	defer TimeMeasure("zip")()
 
 	// Create a ZIP file and zip.Writer
@@ -99,11 +101,11 @@ func ZipSource(source, target string) error {
 }
 
 func UnCompress(source, dest string) ([]string, error) {
-	fileNames, err := Unzip(source, dest)
+	fileNames, err := unzip(source, dest)
 	return fileNames, err
 }
 
-func Unzip(src string, dest string) ([]string, error) {
+func unzip(src string, dest string) ([]string, error) {
 	var filenames []string
 
 	r, err := zip.OpenReader(src)
@@ -161,4 +163,10 @@ func copy(fPath string, f *zip.File) error {
 	}
 
 	return nil
+}
+
+func RandomName() string {
+
+	id, _ := uuid.NewUUID()
+	return id.String()
 }

@@ -13,7 +13,7 @@ func TestZipSource(t *testing.T) {
 	fs := filepath.Join(WorkingDir, "pkg/util/file.go")
 	ft := filepath.Join(WorkingDir, "pkg/util/file.go.zip")
 
-	if err := ZipSource(fs, ft); err != nil {
+	if err := zipSource(fs, ft); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -24,7 +24,7 @@ func TestZipSourceBig(t *testing.T) {
 	fs := filepath.Join(WorkingDir, "test/test50g.txt")
 	ft := filepath.Join(WorkingDir, "test/test50g.txt.zip")
 
-	if err := ZipSource(fs, ft); err != nil {
+	if err := zipSource(fs, ft); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -42,7 +42,7 @@ func TestUnzip(t *testing.T) {
 	src := filepath.Join(WorkingDir, "test/yinglong.zip")
 	dest := filepath.Join(WorkingDir, "test")
 
-	fileNames, err := Unzip(src, dest)
+	fileNames, err := unzip(src, dest)
 	if err != nil {
 		t.Fatal(err)
 	}
