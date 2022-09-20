@@ -37,3 +37,15 @@ func TestConcatenate(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+func TestUnzip(t *testing.T) {
+	src := filepath.Join(WorkingDir, "test/util.go.zip")
+	dest := filepath.Join(WorkingDir, "test")
+
+	fileNames, err := Unzip(src, dest)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Logf("unzip done: %v", fileNames)
+}
