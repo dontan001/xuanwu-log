@@ -44,6 +44,7 @@ func backupReady(q string, backup *schedule.Backup) (*schedule.QueryConf, bool) 
 func extractWithBackup(startParsed time.Time, endParsed time.Time,
 	queryConf *schedule.QueryConf,
 	backup *schedule.Backup,
+	dstFile string,
 	data *data.Data,
 	store *storage.Store) error {
 
@@ -54,8 +55,17 @@ func extractWithBackup(startParsed time.Time, endParsed time.Time,
 	}
 
 	submit(requests)
-	proceed(requests)
-	cleanup(requests)
+	if err = proceed(dstFile, requests); err != nil {
+		log.Printf("Proceed files with error: %s", err)
+		return err
+	}
+
+	if !trace {
+		if err = cleanup(requests); err != nil {
+			log.Printf("Clean up files with error: %s", err)
+			return err
+		}
+	}
 
 	return nil
 }
@@ -161,12 +171,55 @@ func submit(requests []ExtractRequest) {
 	wg.Wait()
 }
 
-func proceed(requests []ExtractRequest) {
+func proceed(dstFile string, requests []ExtractRequest) error {
+	log.Printf("Merge files total: %d", len(requests))
 
+	for idx, req := range requests {
+		fileName := filepath.Join(req.ArchiveConfig.WorkingDir, req.ArchiveConfig.Name)
+		fileNameArchive := filepath.Join(req.ArchiveConfig.WorkingDir, req.ArchiveConfig.ArchiveName)
+
+		if req.FromData {
+			err := util.Concatenate(dstFile, fileName)
+			if err != nil {
+				return err
+			}
+		} else {
+			_, err := util.UnCompress(fileNameArchive, req.ArchiveConfig.WorkingDir)
+			if err != nil {
+				return err
+			}
+
+			err = util.Concatenate(dstFile, fileName)
+			if err != nil {
+				return err
+			}
+		}
+
+		log.Printf("Merged #%d %s", idx, fileName)
+	}
+
+	return nil
 }
 
-func cleanup(requests []ExtractRequest) {
+func cleanup(requests []ExtractRequest) error {
+	log.Printf("Clean up files")
 
+	for idx, req := range requests {
+		fileName := filepath.Join(req.ArchiveConfig.WorkingDir, req.ArchiveConfig.Name)
+		fileNameArchive := filepath.Join(req.ArchiveConfig.WorkingDir, req.ArchiveConfig.ArchiveName)
+
+		if err := os.Remove(fileName); err != nil {
+			return err
+		}
+		log.Printf("Removed #%d %s", idx, fileName)
+
+		if err := os.Remove(fileNameArchive); err != nil {
+			return err
+		}
+		log.Printf("Removed #%d %s", idx, fileNameArchive)
+	}
+
+	return nil
 }
 
 func (req ExtractRequest) Do() error {
@@ -177,23 +230,10 @@ func (req ExtractRequest) Do() error {
 
 	if req.FromData {
 		log.Printf("Extract from Loki for req: %s", req.String())
+		return req.Data.Extract(req.Query, req.Start, req.End, fileName)
 	} else {
 		log.Printf("Extract from remote storage for req: %s", req.String())
 		return req.Store.Download(req.ArchiveConfig.ObjectPrefix, fileNameArchive)
-	}
-
-	result, err := os.Create(fileName)
-	if err != nil {
-		return err
-	}
-
-	defer func() {
-		result.Close()
-	}()
-
-	err = req.Data.Extract(req.Query, req.Start, req.End, result)
-	if err != nil {
-		return err
 	}
 
 	return nil

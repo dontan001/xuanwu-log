@@ -72,7 +72,7 @@ func Start(server *Server, backup *schedule.Backup) {
 			startParsed.Format(time.RFC3339Nano), startParsed.UnixNano(), endParsed.Format(time.RFC3339Nano), endParsed.UnixNano())
 
 		result := &bytes.Buffer{}
-		err := data.Extract(qry, startParsed, endParsed, result)
+		err := data.ExtractWithWriter(qry, startParsed, endParsed, result)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -117,24 +117,29 @@ func Start(server *Server, backup *schedule.Backup) {
 		fileNameFull := filepath.Join(server.Conf.WorkingDir, fileName)
 		fileNameArchive := fmt.Sprintf("%s.zip", fileName)
 		fileNameArchiveFull := filepath.Join(server.Conf.WorkingDir, fileNameArchive)
-		result, err := os.Create(fileNameFull)
-		if err != nil {
-			log.Fatal(err)
-		}
+
 		defer func() {
-			result.Close()
-			os.Remove(fileNameFull)
-			os.Remove(fileNameArchiveFull)
+			if !trace {
+				err := os.Remove(fileNameFull)
+				if err != nil {
+					log.Printf("Remove file %q with error: %s", fileNameFull, err)
+				}
+
+				err = os.Remove(fileNameArchiveFull)
+				if err != nil {
+					log.Printf("Remove file %q with error: %s", fileNameArchiveFull, err)
+				}
+			}
 		}()
 
 		queryConf, ready := backupReady(qry, backup)
 		if !ready {
-			err = data.Extract(qry, startParsed, endParsed, result)
+			err = data.Extract(qry, startParsed, endParsed, fileNameFull)
 			if err != nil {
 				log.Fatal(err)
 			}
 		} else {
-			err = extractWithBackup(startParsed, endParsed, queryConf, backup, data, store)
+			err = extractWithBackup(startParsed, endParsed, queryConf, backup, fileNameFull, data, store)
 			if err != nil {
 				log.Fatal(err)
 			}
