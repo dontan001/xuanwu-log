@@ -145,7 +145,7 @@ func Start(server *Server, backup *schedule.Backup) {
 			}
 		}
 
-		if err = util.ZipSource(fileNameFull, fileNameArchiveFull); err != nil {
+		if err = util.Compress(fileNameFull, fileNameArchiveFull); err != nil {
 			log.Fatal(err)
 		}
 
