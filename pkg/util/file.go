@@ -2,6 +2,7 @@ package util
 
 import (
 	"archive/zip"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -9,20 +10,27 @@ import (
 	"strings"
 )
 
-func Concatenate(merged, file string) error {
-	target, err := os.OpenFile(merged, os.O_WRONLY|os.O_APPEND, 0644)
+func Concatenate(merged, other string) error {
+	create := false
+	if _, err := os.Stat(merged); errors.Is(err, os.ErrNotExist) {
+		create = true
+	}
+
+	target, err := os.OpenFile(merged, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
 	if err != nil {
 		return err
 	}
 	defer target.Close()
 
-	src, err := os.Open(file)
+	src, err := os.Open(other)
 	if err != nil {
 		return err
 	}
 	defer src.Close()
 
-	target.WriteString("\n")
+	if !create {
+		target.WriteString("\n")
+	}
 
 	_, err = io.Copy(target, src)
 	return nil
