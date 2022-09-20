@@ -30,8 +30,8 @@ func TestZipSourceBig(t *testing.T) {
 }
 
 func TestConcatenate(t *testing.T) {
-	ft := filepath.Join(WorkingDir, "test/t1.txt")
-	fs := filepath.Join(WorkingDir, "test/t2.txt")
+	ft := filepath.Join(WorkingDir, "test/a.txt")
+	fs := filepath.Join(WorkingDir, "test/b.txt")
 
 	if err := Concatenate(ft, fs); err != nil {
 		t.Fatal(err)
@@ -39,7 +39,7 @@ func TestConcatenate(t *testing.T) {
 }
 
 func TestUnzip(t *testing.T) {
-	src := filepath.Join(WorkingDir, "test/util.go.zip")
+	src := filepath.Join(WorkingDir, "test/yinglong.zip")
 	dest := filepath.Join(WorkingDir, "test")
 
 	fileNames, err := Unzip(src, dest)
