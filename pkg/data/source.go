@@ -2,6 +2,7 @@ package data
 
 import (
 	"io"
+	"log"
 	"os"
 	"time"
 
@@ -28,6 +29,7 @@ func (data *Data) Setup() {
 		}
 
 		data.Loki.Setup()
+		log.Printf("Data setup finish.")
 	}
 }
 
