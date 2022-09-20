@@ -11,10 +11,24 @@ import (
 	"time"
 
 	"github.com/kyligence/xuanwu-log/pkg/data"
+	"github.com/kyligence/xuanwu-log/pkg/schedule"
+	"github.com/kyligence/xuanwu-log/pkg/storage"
 	"github.com/kyligence/xuanwu-log/pkg/util"
 )
 
-func Start(server *Server, data *data.Data) {
+func Start(server *Server, backup *schedule.Backup) {
+	data := func(s *Server) *data.Data {
+		d := &data.Data{Conf: s.Data}
+		d.Setup()
+		return d
+	}(server)
+
+	store := func(c *schedule.Backup) *storage.Store {
+		s := &storage.Store{Config: c.Archive.S3}
+		s.Setup()
+		return s
+	}(backup)
+
 	http.HandleFunc("/log/big", func(w http.ResponseWriter, req *http.Request) {
 		defer util.TimeMeasure("download")()
 
@@ -113,9 +127,17 @@ func Start(server *Server, data *data.Data) {
 			os.Remove(fileNameArchiveFull)
 		}()
 
-		err = data.Extract(qry, startParsed, endParsed, result)
-		if err != nil {
-			log.Fatal(err)
+		queryConf, ready := backupReady(qry, backup)
+		if !ready {
+			err = data.Extract(qry, startParsed, endParsed, result)
+			if err != nil {
+				log.Fatal(err)
+			}
+		} else {
+			err = extractWithBackup(startParsed, endParsed, queryConf, backup, data, store)
+			if err != nil {
+				log.Fatal(err)
+			}
 		}
 
 		if err = util.ZipSource(fileNameFull, fileNameArchiveFull); err != nil {

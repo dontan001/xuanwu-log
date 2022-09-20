@@ -4,6 +4,13 @@ import (
 	"github.com/kyligence/xuanwu-log/pkg/data"
 )
 
+const (
+	PARALLELIZE = 4
+	trace       = true
+
+	DOWNLOAD = "download"
+)
+
 type Server struct {
 	Conf *ServerConf    `yaml:"server"`
 	Data *data.DataConf `yaml:"data"`
