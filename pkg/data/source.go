@@ -2,6 +2,7 @@ package data
 
 import (
 	"io"
+	"os"
 	"time"
 
 	"github.com/kyligence/xuanwu-log/pkg/data/loki"
@@ -30,6 +31,19 @@ func (data *Data) Setup() {
 	}
 }
 
-func (data *Data) Extract(q string, start, end time.Time, result io.Writer) error {
+func (data *Data) Extract(q string, start, end time.Time, fileName string) error {
+	result, err := os.Create(fileName)
+	if err != nil {
+		return err
+	}
+
+	defer func() {
+		result.Close()
+	}()
+
+	return data.Loki.Query(q, start, end, result)
+}
+
+func (data *Data) ExtractWithWriter(q string, start, end time.Time, result io.Writer) error {
 	return data.Loki.Query(q, start, end, result)
 }

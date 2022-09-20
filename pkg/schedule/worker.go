@@ -46,20 +46,21 @@ func (req BackupRequest) Do() error {
 	fileName := filepath.Join(req.ArchiveConfig.WorkingDir, req.ArchiveConfig.Name)
 	fileNameArchive := filepath.Join(req.ArchiveConfig.WorkingDir, req.ArchiveConfig.ArchiveName)
 
-	result, err := os.Create(fileName)
-	if err != nil {
-		return err
-	}
-
 	defer func() {
-		result.Close()
 		if !trace {
-			os.Remove(fileName)
-			os.Remove(fileNameArchive)
+			err := os.Remove(fileName)
+			if err != nil {
+				log.Printf("Remove file %q with error: %s", fileName, err)
+			}
+
+			err = os.Remove(fileNameArchive)
+			if err != nil {
+				log.Printf("Remove file %q with error: %s", fileNameArchive, err)
+			}
 		}
 	}()
 
-	err = req.Data.Extract(req.Query, req.Start, req.End, result)
+	err = req.Data.Extract(req.Query, req.Start, req.End, fileName)
 	if err != nil {
 		return err
 	}
