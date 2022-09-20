@@ -123,9 +123,9 @@ func Unzip(src string, dest string) ([]string, error) {
 			return filenames, err
 		}
 
-		err2 := copy(fPath, f)
-		if err2 != nil {
-			return filenames, err2
+		err = copy(fPath, f)
+		if err != nil {
+			return filenames, err
 		}
 	}
 
