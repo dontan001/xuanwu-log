@@ -1,13 +1,12 @@
 package schedule
 
 import (
-	"github.com/kyligence/xuanwu-log/pkg/data/loki"
 	"log"
 	"testing"
 
 	"github.com/aws/aws-sdk-go/aws/endpoints"
-
 	"github.com/kyligence/xuanwu-log/pkg/data"
+	"github.com/kyligence/xuanwu-log/pkg/data/loki"
 	"github.com/kyligence/xuanwu-log/pkg/storage"
 	"github.com/kyligence/xuanwu-log/pkg/storage/s3"
 )
