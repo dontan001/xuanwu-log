@@ -190,17 +190,17 @@ func proceed(dstFile string, requests []ExtractRequest) error {
 		if req.FromData {
 			err := util.Concatenate(dstFile, fileName)
 			if err != nil {
-				return err
+				return fmt.Errorf("concatenate %q with error: %s", req.ArchiveConfig.Name, err)
 			}
 		} else {
 			_, err := util.UnCompress(fileNameArchive, req.ArchiveConfig.WorkingDir)
 			if err != nil {
-				return err
+				return fmt.Errorf("uncompress %q with error: %s", req.ArchiveConfig.ArchiveName, err)
 			}
 
 			err = util.Concatenate(dstFile, fileName)
 			if err != nil {
-				return err
+				return fmt.Errorf("concatenate %q with error: %s", req.ArchiveConfig.Name, err)
 			}
 		}
 
