@@ -1,6 +1,7 @@
 package api
 
 import (
+	"github.com/kyligence/xuanwu-log/pkg/data/loki"
 	"log"
 	"testing"
 
@@ -16,6 +17,11 @@ var (
 	testQuery = "{job=\"fluent-bit\",app=\"yinglong\"}"
 
 	testBackup = &schedule.Backup{
+		Data: &data.DataConf{
+			Loki: &loki.LokiConf{
+				Address: "http://aafdd592dddec49ed8bf3c35d9d538c9-577636166.us-west-2.elb.amazonaws.com:80",
+			},
+		},
 		Queries: []*schedule.QueryConf{
 			{
 				Query: testQuery,
@@ -93,4 +99,17 @@ func TestGenerateRequestsHeadOnly(t *testing.T) {
 	for idx, request := range requests {
 		log.Printf("Request #%d %s", idx+1, request.String())
 	}
+}
+
+func TestSubmit(t *testing.T) {
+	startParsed, endParsed, _ := util.NormalizeTimes("now-1h", "now")
+
+	queryConf, _ := backupReady(testQuery, testBackup)
+	queryConf.Ensure(DOWNLOAD, testBackup)
+	requests, err := generateRequests(startParsed, endParsed, queryConf, testData, testStore)
+	if err != nil {
+		t.Fatalf("%s", err)
+	}
+
+	submit(requests)
 }
