@@ -57,6 +57,8 @@ func (req BackupRequest) Do() error {
 			if err != nil && !os.IsNotExist(err) {
 				log.Printf("Remove file %q with error: %s", fileNameArchive, err)
 			}
+		} else {
+			log.Printf("trace mode, skips remove for %q", fileName)
 		}
 	}()
 
@@ -71,6 +73,7 @@ func (req BackupRequest) Do() error {
 	}
 
 	if trace {
+		log.Printf("trace mode, skips upload for %q", req.ArchiveConfig.ObjectPrefix)
 		return nil
 	}
 	err = req.Store.Upload(req.ArchiveConfig.ObjectPrefix, fileNameArchive)
