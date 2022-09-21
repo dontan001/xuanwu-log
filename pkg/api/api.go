@@ -136,6 +136,7 @@ func Start(server *Server, backup *schedule.Backup) {
 		}()
 
 		queryConf, ready := backupReady(qry, backup)
+		log.Printf("backup ready: %t \n", ready)
 		if !ready {
 			err = data.Extract(qry, startParsed, endParsed, fileNameFull)
 			if err != nil {
