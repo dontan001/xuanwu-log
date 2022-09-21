@@ -216,12 +216,12 @@ func cleanup(requests []ExtractRequest) error {
 		fileName := filepath.Join(req.ArchiveConfig.WorkingDir, req.ArchiveConfig.Name)
 		fileNameArchive := filepath.Join(req.ArchiveConfig.WorkingDir, req.ArchiveConfig.ArchiveName)
 
-		if err := os.Remove(fileName); err != nil {
+		if err := os.Remove(fileName); err != nil && !os.IsNotExist(err) {
 			return err
 		}
 		log.Printf("Removed #%d %s", idx, fileName)
 
-		if err := os.Remove(fileNameArchive); err != nil {
+		if err := os.Remove(fileNameArchive); err != nil && !os.IsNotExist(err) {
 			return err
 		}
 		log.Printf("Removed #%d %s", idx, fileNameArchive)
