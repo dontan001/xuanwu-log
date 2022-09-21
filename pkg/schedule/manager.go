@@ -119,6 +119,7 @@ func submit(requests []BackupRequest) {
 	ch := make(chan struct{}, PARALLELIZE)
 	realtime()
 
+	log.Printf("Request total: %d", len(requests))
 	for idx := 0; idx < len(requests); idx++ {
 		ch <- struct{}{}
 		wg.Add(1)

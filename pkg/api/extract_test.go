@@ -28,8 +28,8 @@ var (
 			{
 				Query: testQuery,
 				Schedule: &schedule.Schedule{
-					Interval: 3,
-					Max:      4},
+					Interval: schedule.DefaultInterval,
+					Max:      schedule.DefaultMax},
 			},
 		},
 		Archive: &schedule.Archive{
@@ -104,7 +104,7 @@ func TestGenerateRequestsHeadOnly(t *testing.T) {
 }
 
 func TestSubmit(t *testing.T) {
-	startParsed, endParsed, _ := util.NormalizeTimes("now-1h", "now")
+	startParsed, endParsed, _ := util.NormalizeTimes("now-6h", "now")
 
 	queryConf, _ := backupReady(testQuery, testBackup)
 	queryConf.Ensure(DOWNLOAD, testBackup)

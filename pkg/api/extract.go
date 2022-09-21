@@ -155,6 +155,7 @@ func submit(requests []ExtractRequest) {
 	var wg sync.WaitGroup
 	ch := make(chan struct{}, PARALLELIZE)
 
+	log.Printf("Request total: %d", len(requests))
 	for idx := 0; idx < len(requests); idx++ {
 		ch <- struct{}{}
 		wg.Add(1)
