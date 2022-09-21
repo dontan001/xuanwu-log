@@ -124,6 +124,11 @@ func generateRequests(start, end time.Time,
 
 		name := fmt.Sprintf(conf.Archive.NamePattern, lastBackup.Format(time.RFC3339))
 		archiveName := fmt.Sprintf("%s.%s", name, conf.Archive.Type)
+		objectPrefix := func() string {
+			prefix := filepath.Join(conf.Archive.SubDir, archiveName)
+			prefix = strings.Replace(prefix, DOWNLOAD, schedule.BACKUP, -1)
+			return prefix
+		}()
 
 		requests = append(requests, ExtractRequest{
 			Query: conf.Query,
@@ -133,7 +138,7 @@ func generateRequests(start, end time.Time,
 				Name:         name,
 				ArchiveName:  archiveName,
 				WorkingDir:   filepath.Join(conf.Archive.WorkingDir, conf.Archive.SubDir),
-				ObjectPrefix: filepath.Join(conf.Archive.SubDir, archiveName),
+				ObjectPrefix: objectPrefix,
 			},
 
 			FromData: tailRequest,
