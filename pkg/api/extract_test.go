@@ -1,12 +1,13 @@
 package api
 
 import (
-	"github.com/kyligence/xuanwu-log/pkg/data/loki"
 	"log"
+	"path/filepath"
 	"testing"
 
 	"github.com/aws/aws-sdk-go/aws/endpoints"
 	"github.com/kyligence/xuanwu-log/pkg/data"
+	"github.com/kyligence/xuanwu-log/pkg/data/loki"
 	"github.com/kyligence/xuanwu-log/pkg/schedule"
 	"github.com/kyligence/xuanwu-log/pkg/storage"
 	"github.com/kyligence/xuanwu-log/pkg/storage/s3"
@@ -14,7 +15,8 @@ import (
 )
 
 var (
-	testQuery = "{job=\"fluent-bit\",app=\"yinglong\"}"
+	testQuery      = "{job=\"fluent-bit\",app=\"yinglong\"}"
+	testWorkingDir = "/Users/dongge.tan/Dev/workspace/GOPATH/github.com/Kyligence/xuanwu-log/test"
 
 	testBackup = &schedule.Backup{
 		Data: &data.DataConf{
@@ -32,7 +34,7 @@ var (
 		},
 		Archive: &schedule.Archive{
 			Type:        "zip",
-			WorkingDir:  "/Users/dongge.tan/Dev/workspace/GOPATH/github.com/Kyligence/xuanwu-log/test",
+			WorkingDir:  testWorkingDir,
 			NamePattern: "%s.log",
 			S3: &s3.S3Config{
 				Bucket: "donggetest",
@@ -112,4 +114,21 @@ func TestSubmit(t *testing.T) {
 	}
 
 	submit(requests)
+}
+
+func TestProceedNotExist(t *testing.T) {
+	startParsed, endParsed, _ := util.NormalizeTimes("now-1h", "now")
+
+	queryConf, _ := backupReady(testQuery, testBackup)
+	queryConf.Ensure(DOWNLOAD, testBackup)
+	requests, err := generateRequests(startParsed, endParsed, queryConf, testData, testStore)
+	if err != nil {
+		t.Fatalf("%s", err)
+	}
+
+	dst := filepath.Join(testWorkingDir, "all.txt")
+	err = proceed(dst, requests)
+	if err != nil {
+		t.Logf("expect error: %s", err)
+	}
 }
