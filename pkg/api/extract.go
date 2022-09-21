@@ -84,6 +84,26 @@ func generateRequests(start, end time.Time,
 	}
 
 	var requests []ExtractRequest
+	startTimeRequest := start
+	if start.Before(lastBackup) {
+		startTimeRequest = lastBackup
+	}
+	headRequest := ExtractRequest{
+		Query: conf.Query,
+		Start: startTimeRequest,
+		End:   end,
+		ArchiveConfig: schedule.ArchiveConfig{
+			Name:        "head.log",
+			ArchiveName: "head.log.zip",
+			WorkingDir:  filepath.Join(conf.Archive.WorkingDir, conf.Archive.SubDir),
+		},
+
+		FromData: true,
+		Data:     data,
+		Store:    store,
+	}
+	requests = append(requests, headRequest)
+
 	for idx := 1; idx <= conf.Schedule.Max; idx++ {
 		startTime := lastBackup.Add(-time.Duration(conf.Schedule.Interval) * time.Hour)
 		endTime := lastBackup.Add(-1 * time.Nanosecond)
@@ -92,13 +112,13 @@ func generateRequests(start, end time.Time,
 			break
 		}
 
-		headRequest := false
+		tailRequest := false
 		if start.After(startTime) {
-			headRequest = true
+			tailRequest = true
 		}
 
 		startTimeRequest := startTime
-		if headRequest {
+		if tailRequest {
 			startTimeRequest = start
 		}
 
@@ -116,30 +136,13 @@ func generateRequests(start, end time.Time,
 				ObjectPrefix: filepath.Join(conf.Archive.SubDir, archiveName),
 			},
 
-			FromData: headRequest,
+			FromData: tailRequest,
 			Data:     data,
 			Store:    store,
 		})
 		lastBackup = startTime
 	}
 
-	startTimeRequest := util.CalcLastBackup(conf.Schedule.Interval, t)
-	tailRequest := ExtractRequest{
-		Query: conf.Query,
-		Start: startTimeRequest,
-		End:   end,
-		ArchiveConfig: schedule.ArchiveConfig{
-			Name:        "tail.log",
-			ArchiveName: "tail.log.zip",
-			WorkingDir:  filepath.Join(conf.Archive.WorkingDir, conf.Archive.SubDir),
-		},
-
-		FromData: true,
-		Data:     data,
-		Store:    store,
-	}
-
-	requests = append(requests, tailRequest)
 	return requests, nil
 }
 
@@ -249,6 +252,7 @@ func (req ExtractRequest) String() string {
 	b.WriteString("end=" + req.End.Format(time.RFC3339Nano) + ",")
 	b.WriteString("endUnix=" + fmt.Sprintf("%d", req.End.UnixNano()) + ",")
 	b.WriteString("data=" + fmt.Sprintf("%t", req.FromData) + ",")
+	b.WriteString("name=" + fmt.Sprintf("%s", req.ArchiveConfig.Name) + ",")
 	b.WriteString("prefix=" + req.ArchiveConfig.ObjectPrefix)
 	b.WriteByte('}')
 
