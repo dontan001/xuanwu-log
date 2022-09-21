@@ -132,6 +132,8 @@ func Start(server *Server, backup *schedule.Backup) {
 				if err != nil && !os.IsNotExist(err) {
 					log.Printf("Remove file %q with error: %s", fileNameArchiveFull, err)
 				}
+			} else {
+				log.Printf("trace mode, skips remove for %q", fileName)
 			}
 		}()
 

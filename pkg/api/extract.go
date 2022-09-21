@@ -65,6 +65,8 @@ func extractWithBackup(startParsed time.Time, endParsed time.Time,
 			log.Printf("Clean up files with error: %s", err)
 			return err
 		}
+	} else {
+		log.Printf("trace mode, skips cleanup files")
 	}
 
 	return nil
