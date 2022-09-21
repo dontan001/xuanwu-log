@@ -76,7 +76,7 @@ func generateRequests(start, end time.Time,
 	store *storage.Store) ([]ExtractRequest, error) {
 
 	t := time.Now()
-	log.Printf("Checked at: %s", t.Format(time.RFC3339Nano))
+	log.Printf("Extract at: %s", t.Format(time.RFC3339Nano))
 
 	lastBackup := util.CalcLastBackup(conf.Schedule.Interval, t)
 	if end.Before(lastBackup) {
@@ -231,7 +231,7 @@ func cleanup(requests []ExtractRequest) error {
 }
 
 func (req ExtractRequest) Do() error {
-	log.Printf("Proceed extract req: %s", req.String())
+	log.Printf("Proceed req: %s", req.String())
 
 	fileName := filepath.Join(req.ArchiveConfig.WorkingDir, req.ArchiveConfig.Name)
 	fileNameArchive := filepath.Join(req.ArchiveConfig.WorkingDir, req.ArchiveConfig.ArchiveName)
