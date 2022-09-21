@@ -1,6 +1,7 @@
 package schedule
 
 import (
+	"github.com/kyligence/xuanwu-log/pkg/data/loki"
 	"log"
 	"testing"
 
@@ -13,6 +14,11 @@ import (
 
 var (
 	testBackup = &Backup{
+		Data: &data.DataConf{
+			Loki: &loki.LokiConf{
+				Address: "http://aafdd592dddec49ed8bf3c35d9d538c9-577636166.us-west-2.elb.amazonaws.com:80",
+			},
+		},
 		Queries: []*QueryConf{
 			{
 				Query: "{job=\"fluent-bit\",app=\"yinglong\"}",
