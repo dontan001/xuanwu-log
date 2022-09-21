@@ -24,7 +24,7 @@ func Start(server *Server, backup *schedule.Backup) {
 	}(server)
 
 	store := func(b *schedule.Backup) *storage.Store {
-		if b != nil {
+		if b == nil {
 			return nil
 		}
 		s := &storage.Store{Config: b.Archive.S3}
