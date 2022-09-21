@@ -121,12 +121,12 @@ func Start(server *Server, backup *schedule.Backup) {
 		defer func() {
 			if !trace {
 				err := os.Remove(fileNameFull)
-				if err != nil {
+				if err != nil && !os.IsNotExist(err) {
 					log.Printf("Remove file %q with error: %s", fileNameFull, err)
 				}
 
 				err = os.Remove(fileNameArchiveFull)
-				if err != nil {
+				if err != nil && !os.IsNotExist(err) {
 					log.Printf("Remove file %q with error: %s", fileNameArchiveFull, err)
 				}
 			}

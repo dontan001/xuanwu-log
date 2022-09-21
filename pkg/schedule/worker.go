@@ -49,12 +49,12 @@ func (req BackupRequest) Do() error {
 	defer func() {
 		if !trace {
 			err := os.Remove(fileName)
-			if err != nil {
+			if err != nil && !os.IsNotExist(err) {
 				log.Printf("Remove file %q with error: %s", fileName, err)
 			}
 
 			err = os.Remove(fileNameArchive)
-			if err != nil {
+			if err != nil && !os.IsNotExist(err) {
 				log.Printf("Remove file %q with error: %s", fileNameArchive, err)
 			}
 		}
