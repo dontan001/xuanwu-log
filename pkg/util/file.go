@@ -168,5 +168,6 @@ func copy(fPath string, f *zip.File) error {
 func RandomName() string {
 
 	id, _ := uuid.NewUUID()
-	return id.String()
+	name := fmt.Sprintf("%s.log", id.String())
+	return name
 }
