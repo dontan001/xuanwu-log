@@ -121,13 +121,29 @@ func TestProceedNotExist(t *testing.T) {
 
 	queryConf, _ := backupReady(testQuery, testBackup)
 	queryConf.Ensure(DOWNLOAD, testBackup)
-	requests, err := generateRequests(startParsed, endParsed, queryConf, testData, testStore)
+	requests, err := generateRequests(startParsed, endParsed, queryConf, nil, nil)
 	if err != nil {
 		t.Fatalf("%s", err)
 	}
 
 	dst := filepath.Join(testWorkingDir, "all.txt")
 	err = proceed(dst, requests)
+	if err != nil {
+		t.Logf("expect error: %s", err)
+	}
+}
+
+func TestCleanupNotExist(t *testing.T) {
+	startParsed, endParsed, _ := util.NormalizeTimes("now-1h", "now")
+
+	queryConf, _ := backupReady(testQuery, testBackup)
+	queryConf.Ensure(DOWNLOAD, testBackup)
+	requests, err := generateRequests(startParsed, endParsed, queryConf, nil, nil)
+	if err != nil {
+		t.Fatalf("%s", err)
+	}
+
+	err = cleanup(requests)
 	if err != nil {
 		t.Logf("expect error: %s", err)
 	}
