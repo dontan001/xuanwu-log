@@ -13,7 +13,7 @@ const (
 	DefaultWorkingDir = "/var/log"
 
 	PARALLELIZE = 4
-	trace       = true
+	trace       = false
 
 	BACKUP = "backup"
 )

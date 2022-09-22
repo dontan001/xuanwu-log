@@ -6,7 +6,7 @@ import (
 
 const (
 	PARALLELIZE = 4
-	trace       = true
+	trace       = false
 
 	DOWNLOAD = "download"
 )
