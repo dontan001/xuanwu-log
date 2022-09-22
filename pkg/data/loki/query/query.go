@@ -63,13 +63,17 @@ func QueryV2(client cliClient.Client, q string, start, end time.Time, result io.
 		ColoredOutput: false,
 	}
 
-	out, err := output.NewLogOutput(result, mode, outputOptions)
+	/*out, err := output.NewLogOutput(result, mode, outputOptions)
 	if err != nil {
 		log.Printf("Unable to create log output: %s", err)
 		return err
+	}*/
+	outV2 := &DefaultOutputV2{
+		w:       result,
+		options: outputOptions,
 	}
 
-	err = rangeQuery.DoQuery(client, out, false)
+	err := rangeQuery.DoQuery(client, outV2, false)
 	if err != nil {
 		log.Printf("DoQuery failed: %s", err)
 		return err
