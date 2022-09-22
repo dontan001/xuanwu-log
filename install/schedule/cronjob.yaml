@@ -15,6 +15,17 @@ spec:
             imagePullPolicy: Always
             args:
             - -config.file=/etc/config/config.yaml
+            env:
+            - name: ACCESSKEYID
+              valueFrom:
+                secretKeyRef:
+                  name: backup
+                  key: AccessKeyID
+            - name: ACCESSKEY
+              valueFrom:
+                secretKeyRef:
+                  name: backup
+                  key: AccessKey
             volumeMounts:
             - name: config
               mountPath: /etc/config
