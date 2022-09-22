@@ -54,19 +54,20 @@ func extractWithBackup(startParsed time.Time, endParsed time.Time,
 		return err
 	}
 
+	defer func() {
+		if !trace {
+			if err = cleanup(requests); err != nil {
+				log.Printf("Clean up files with error: %s", err)
+			}
+		} else {
+			log.Printf("trace mode, skips cleanup files")
+		}
+	}()
+
 	submit(requests)
 	if err = proceed(dstFile, requests); err != nil {
 		log.Printf("Proceed files with error: %s", err)
 		return err
-	}
-
-	if !trace {
-		if err = cleanup(requests); err != nil {
-			log.Printf("Clean up files with error: %s", err)
-			return err
-		}
-	} else {
-		log.Printf("trace mode, skips cleanup files")
 	}
 
 	return nil
