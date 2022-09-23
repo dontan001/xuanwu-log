@@ -4,4 +4,4 @@ FROM golang:1.17-alpine
 WORKDIR /app
 COPY bin/xuanwu-backup xuanwu-backup
 
-CMD [ "/app/xuanwu-backup" ]
+ENTRYPOINT [ "/app/xuanwu-backup" ]
