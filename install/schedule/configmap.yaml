@@ -3,11 +3,12 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: backup
+  namespace: xuanwu-log
 data:
   config.yaml: |
     data:
       loki:
-        address: http://loki-loki-distributed-querier:3100
+        address: http://loki-loki-distributed-querier.loki:3100
     queries:
     - query: "{job=\"fluent-bit\",app=\"yinglong\"}"
       schedule:

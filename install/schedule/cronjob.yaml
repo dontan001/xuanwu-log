@@ -3,6 +3,7 @@ apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: backup
+  namespace: xuanwu-log
 spec:
   schedule: "0 */1 * * *"
   jobTemplate:
