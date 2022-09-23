@@ -247,8 +247,6 @@ func (req ExtractRequest) Do() error {
 		log.Printf("Extract from remote storage for req: %s", req.String())
 		return req.Store.Download(req.ArchiveConfig.ObjectPrefix, fileNameArchive)
 	}
-
-	return nil
 }
 
 func (req ExtractRequest) String() string {
