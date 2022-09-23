@@ -22,11 +22,13 @@ spec:
                 secretKeyRef:
                   name: backup
                   key: AccessKeyID
+                  optional: true
             - name: ACCESSKEY
               valueFrom:
                 secretKeyRef:
                   name: backup
                   key: AccessKey
+                  optional: true
             volumeMounts:
             - name: config
               mountPath: /etc/config
