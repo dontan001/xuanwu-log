@@ -3,6 +3,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: api
+  namespace: xuanwu-log
 data:
   config.yaml: |
     server:
@@ -10,4 +11,4 @@ data:
       workingDir: /var/log/log-api
     data:
       loki:
-        address: http://loki-loki-distributed-querier:3100
+        address: http://loki-loki-distributed-querier.loki:3100

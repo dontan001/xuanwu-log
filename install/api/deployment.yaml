@@ -3,6 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: api
+  namespace: xuanwu-log
   labels:
     app: log
     component: api
