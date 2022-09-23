@@ -35,14 +35,14 @@ spec:
           volumeMounts:
           - name: config
             mountPath: /etc/config
-          - name: configBackup
+          - name: configbackup
             mountPath: /etc/backup
       volumes:
       - name: config
         configMap:
           name: api
           defaultMode: 420
-      - name: configBackup
+      - name: configbackup
         configMap:
           name: backup
           defaultMode: 420
