@@ -16,7 +16,7 @@ data:
         max: 8
     archive:
       type: zip
-      workingDir: /var/log
+      workingDir: /var/log/xuanwu-log
       namePattern: "%s.log"
       s3:
         bucket: donggetest

@@ -8,7 +8,7 @@ data:
   config.yaml: |
     server:
       port: ":8080"
-      workingDir: /var/log/log-api
+      workingDir: /var/log/xuanwu-log
     data:
       loki:
         address: http://loki-loki-distributed-querier.loki:3100
