@@ -28,6 +28,11 @@ func main() {
 		panic(fmt.Errorf("config validation err: %s", err))
 	}
 
+	err = os.MkdirAll(config.Archive.WorkingDir, os.ModePerm)
+	if err != nil {
+		panic(err)
+	}
+
 	schedule.Run(config)
 }
 

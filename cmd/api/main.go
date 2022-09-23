@@ -62,6 +62,11 @@ func main() {
 		panic(err)
 	}
 
+	err = os.MkdirAll(server.Conf.WorkingDir, os.ModePerm)
+	if err != nil {
+		panic(err)
+	}
+
 	log.Printf("Log API server starting...")
 	api.Start(server, backup)
 }
