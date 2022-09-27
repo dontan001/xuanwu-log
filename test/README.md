@@ -18,3 +18,11 @@ http://localhost:8080/log/big?file=test1g.txt
 http://localhost:8080/log/download?query={job="fluent-bit",app="yinglong"}&start=now-6h&end=now
 
 ```
+
+## How to install the app via helm
+```shell
+// install with override
+helm install test helm/xuanwu-log -f test/xuanwu-log.override --namespace xuanwu-log \
+ --create-namespace --description "install v1" --debug --dry-run
+ 
+```
