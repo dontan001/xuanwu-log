@@ -24,5 +24,7 @@ http://localhost:8080/log/download?query={job="fluent-bit",app="yinglong"}&start
 // install with override
 helm install test helm/xuanwu-log -f test/xuanwu-log.override --namespace xuanwu-log \
  --create-namespace --description "install v1" --debug --dry-run
- 
+
+// uninstall
+helm uninstall test -n xuanwu-log --debug --dry-run 
 ```
