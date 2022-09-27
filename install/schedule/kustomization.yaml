@@ -1,0 +1,12 @@
+resources:
+- configmap.yaml
+- secret.yaml
+- cronjob.yaml
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+images:
+- name: xuanwu-log-schedule
+  newName: dontan001/xuanwu-log
+  newTag: schedule

@@ -12,7 +12,7 @@ spec:
         spec:
           containers:
           - name: backup
-            image: dontan001/xuanwu-log:schedule
+            image: xuanwu-log-schedule
             imagePullPolicy: Always
             args:
             - -config.file=/etc/config/config.yaml

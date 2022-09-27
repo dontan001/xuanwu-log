@@ -1,0 +1,12 @@
+resources:
+- configmap.yaml
+- deployment.yaml
+- service.yaml
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+images:
+- name: xuanwu-log-api
+  newName: dontan001/xuanwu-log
+  newTag: api
