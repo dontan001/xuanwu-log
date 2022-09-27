@@ -1,0 +1,40 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "xuanwu-log.fullname" . }}-backup-cronjob
+  labels:
+  {{- include "xuanwu-log.labels" . | nindent 4 }}
+spec:
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - args:
+            - -config.file=/etc/config/config.yaml
+            env:
+            - name: ACCESSKEYID
+              valueFrom:
+                secretKeyRef:
+                  key: AccessKeyID
+                  name: xuanwu-log-backup-secret
+                  optional: true
+            - name: ACCESSKEY
+              valueFrom:
+                secretKeyRef:
+                  key: AccessKey
+                  name: xuanwu-log-backup-secret
+                  optional: true
+            image: dontan001/xuanwu-log:schedule
+            imagePullPolicy: Always
+            name: backup
+            volumeMounts:
+            - mountPath: /etc/config
+              name: config
+          restartPolicy: OnFailure
+          volumes:
+          - configMap:
+              defaultMode: 420
+              name: xuanwu-log-backup-config
+            name: config
+  schedule: 0 */1 * * *

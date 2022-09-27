@@ -1,0 +1,42 @@
+api:
+  api:
+    image:
+      repository: dontan001/xuanwu-log
+      tag: api
+    resources:
+      limits:
+        cpu: "1"
+        memory: 128Mi
+      requests:
+        cpu: "1"
+        memory: 128Mi
+apiConfig:
+  configYaml:
+    data:
+      loki:
+        address: http://loki-loki-distributed-querier.loki:3100
+    server:
+      port: :8080
+      workingDir: /var/log/xuanwu-log
+apiService:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 8080
+  type: ClusterIP
+backupConfig:
+  configYaml:
+    archive:
+      namePattern: '%s.log'
+      s3:
+        bucket: donggetest
+        region: us-west-2
+      type: zip
+      workingDir: /var/log/xuanwu-log
+    data:
+      loki:
+        address: http://loki-loki-distributed-querier.loki:3100
+backupSecret:
+  accessKey: ""
+  accessKeyID: ""
+kubernetesClusterDomain: cluster.local
