@@ -65,3 +65,31 @@ schedule-image: schedule-build ## Build docker image with the schedule.
 .PHONY: schedule-push
 schedule-push: ## Push docker image with the schedule.
 	docker push ${IMG}:${IMAGE_TAG_SCHD}
+
+##@ Deployment
+
+.PHONY: helm
+helm: helmify ## Generate Helm Charts
+	kubectl kustomize install/default | $(HELMIFY) -vv helm/xuanwu-log
+	kubectl kustomize install/default > helm/xuanwu-log/ALL.yaml
+
+HELMIFY = $(shell pwd)/bin/helmify
+.PHONY: helmify
+helmify: ## Download helmify locally if necessary.
+	$(call go-get-tool-kylin,$(HELMIFY),github.com/arttor/helmify/cmd/helmify@v0.3.4)
+
+# go-get-tool-kylin will 'go get' any package $2 and install it to $1.
+# this is used to get kyligence customized tool
+PROJECT_DIR := $(shell dirname $(abspath $(lastword $(MAKEFILE_LIST))))
+define go-get-tool-kylin
+@[ -f $(1) ] || { \
+set -e ;\
+TMP_DIR=$$(mktemp -d) ;\
+cd $$TMP_DIR ;\
+go mod init tmp ;\
+echo "replace github.com/arttor/helmify => github.com/kyligence/helmify main" >> go.mod ;\
+echo "Downloading $(2)" ;\
+GOBIN=$(PROJECT_DIR)/bin go get $(2) ;\
+rm -rf $$TMP_DIR ;\
+}
+endef
