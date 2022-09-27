@@ -107,7 +107,7 @@ spec:
           name: xuanwu-log-backup-config
         name: configbackup
 ---
-apiVersion: batch/v1
+apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
   name: xuanwu-log-backup-cronjob
