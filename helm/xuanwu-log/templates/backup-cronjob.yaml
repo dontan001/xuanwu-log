@@ -17,15 +17,16 @@ spec:
               valueFrom:
                 secretKeyRef:
                   key: AccessKeyID
-                  name: xuanwu-log-backup-secret
+                  name: {{ include "xuanwu-log.fullname" . }}-backup-secret
                   optional: true
             - name: ACCESSKEY
               valueFrom:
                 secretKeyRef:
                   key: AccessKey
-                  name: xuanwu-log-backup-secret
+                  name: {{ include "xuanwu-log.fullname" . }}-backup-secret
                   optional: true
-            image: dontan001/xuanwu-log:schedule
+            image: {{ .Values.backup.backup.image.repository }}:{{ .Values.backup.backup.image.tag | default
+          .Chart.AppVersion }}
             imagePullPolicy: Always
             name: backup
             volumeMounts:
@@ -35,6 +36,6 @@ spec:
           volumes:
           - configMap:
               defaultMode: 420
-              name: xuanwu-log-backup-config
+              name: {{ include "xuanwu-log.fullname" . }}-backup-config
             name: config
   schedule: 0 */1 * * *

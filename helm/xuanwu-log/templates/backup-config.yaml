@@ -16,8 +16,3 @@ data:
     data:
       loki:
         address: {{ .Values.backupConfig.configYaml.data.loki.address | quote }}
-    queries:
-    - query: {job="fluent-bit",app="yinglong"}
-      schedule:
-        interval: 3
-        max: 8

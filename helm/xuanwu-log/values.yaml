@@ -24,6 +24,11 @@ apiService:
     protocol: TCP
     targetPort: 8080
   type: ClusterIP
+backup:
+  backup:
+    image:
+      repository: dontan001/xuanwu-log
+      tag: schedule
 backupConfig:
   configYaml:
     archive:
