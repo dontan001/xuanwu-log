@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: backup
+  name: backup-config
   namespace: xuanwu-log
 data:
   config.yaml: |

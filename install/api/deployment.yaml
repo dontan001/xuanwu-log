@@ -40,9 +40,9 @@ spec:
       volumes:
       - name: config
         configMap:
-          name: api
+          name: api-config
           defaultMode: 420
       - name: configbackup
         configMap:
-          name: backup
+          name: backup-config
           defaultMode: 420

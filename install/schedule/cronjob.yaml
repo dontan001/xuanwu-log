@@ -2,7 +2,7 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: backup
+  name: backup-cronjob
   namespace: xuanwu-log
 spec:
   schedule: "0 */1 * * *"
@@ -20,13 +20,13 @@ spec:
             - name: ACCESSKEYID
               valueFrom:
                 secretKeyRef:
-                  name: backup
+                  name: backup-secret
                   key: AccessKeyID
                   optional: true
             - name: ACCESSKEY
               valueFrom:
                 secretKeyRef:
-                  name: backup
+                  name: backup-secret
                   key: AccessKey
                   optional: true
             volumeMounts:
@@ -36,5 +36,5 @@ spec:
           volumes:
           - name: config
             configMap:
-              name: backup
+              name: backup-config
               defaultMode: 420
