@@ -133,6 +133,7 @@ loki-distributed:
 
 fluent-bit:
   loki:
+    # Please remember to change {{ printf "%s-loki-distributed-gateway" .Release.Name }}
     serviceName: test-loki-distributed-gateway
     servicePort: 80
     servicePath: /loki/api/v1/push
