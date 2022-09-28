@@ -19,3 +19,12 @@ version: 0.1.0
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
 appVersion: "0.1.0"
+
+# This is to list dependencies
+dependencies:
+  - name: loki-distributed
+    repository: https://grafana.github.io/helm-charts
+    version: 0.56.5
+  - name: fluent-bit
+    repository: https://grafana.github.io/helm-charts
+    version: 2.3.1
