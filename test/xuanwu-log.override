@@ -130,3 +130,9 @@ loki-distributed:
       cache_ttl: 168h
     filesystem:
       directory: /var/loki/chunks
+
+fluent-bit:
+  loki:
+    serviceName: test-loki-distributed-gateway
+    servicePort: 80
+    servicePath: /loki/api/v1/push
