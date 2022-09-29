@@ -68,6 +68,7 @@ spec:
                           sh "pwd && ls -alt"
                           sh "aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 429636537981.dkr.ecr.us-west-2.amazonaws.com"
 
+                          /*
                           sh "CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -o bin/xuanwu-backup ./cmd/schedule/main.go"
                           sh "docker build -t registry.kyligence.io/xuanwu/xuanwu-log:${tag-schedule} -f docker/schedule/Dockerfile ."
                           withDockerRegistry(credentialsId: 'registry-kyligence-io', url: 'https://registry.kyligence.io') {
@@ -79,6 +80,17 @@ spec:
                           withDockerRegistry(credentialsId: 'registry-kyligence-io', url: 'https://registry.kyligence.io') {
                             sh "docker push registry.kyligence.io/xuanwu/xuanwu-log:${tag-api}"
                           }
+                          */
+
+                          withDockerRegistry(credentialsId: 'registry-kyligence-io', url: 'https://registry.kyligence.io') {
+                            sh "docker pull docker.io/dontan001/xuanwu-log:schedule"
+                            sh "docker tag docker.io/dontan001/xuanwu-log:schedule registry.kyligence.io/xuanwu/xuanwu-log:schedule"
+                            sh "docker push registry.kyligence.io/xuanwu/xuanwu-log:schedule"
+
+                            sh "docker pull docker.io/dontan001/xuanwu-log:api"
+                            sh "docker tag docker.io/dontan001/xuanwu-log:api registry.kyligence.io/xuanwu/xuanwu-log:api"
+                            sh "docker push registry.kyligence.io/xuanwu/xuanwu-log:api"
+                         }
 
                           withDockerRegistry(credentialsId: 'registry-kyligence-io', url: 'https://registry.kyligence.io') {
                               sh "docker pull docker.io/grafana/loki:2.2.1"
@@ -86,9 +98,9 @@ spec:
                               sh "docker push registry.kyligence.io/xuanwu/loki:2.2.1"
                           }
                           withDockerRegistry(credentialsId: 'registry-kyligence-io', url: 'https://registry.kyligence.io') {
-                            sh "docker pull grafana/fluent-bit-plugin-loki:2.1.0-amd6"
-                            sh "docker tag grafana/fluent-bit-plugin-loki:2.1.0-amd6 registry.kyligence.io/xuanwu/fluent-bit-plugin-loki:2.1.0-amd6"
-                            sh "docker push registry.kyligence.io/xuanwu/fluent-bit-plugin-loki:2.1.0-amd6"
+                            sh "docker pull docker.io/grafana/fluent-bit-plugin-loki:2.1.0-amd64"
+                            sh "docker tag docker.io/grafana/fluent-bit-plugin-loki:2.1.0-amd64 registry.kyligence.io/xuanwu/fluent-bit-plugin-loki:2.1.0-amd64"
+                            sh "docker push registry.kyligence.io/xuanwu/fluent-bit-plugin-loki:2.1.0-amd64"
                           }
                           withDockerRegistry(credentialsId: 'registry-kyligence-io', url: 'https://registry.kyligence.io') {
                             sh "docker pull docker.io/nginxinc/nginx-unprivileged:1.19-alpine"
@@ -126,7 +138,7 @@ spec:
                           sh "docker rmi registry.kyligence.io/xuanwu/xuanwu-log:${tag-schedule}"
                           sh "docker rmi registry.kyligence.io/xuanwu/xuanwu-log:${tag-api}"
                           sh "docker rmi registry.kyligence.io/xuanwu/loki:2.2.1"
-                          sh "docker rmi registry.kyligence.io/xuanwu/fluent-bit-plugin-loki:2.1.0-amd6"
+                          sh "docker rmi registry.kyligence.io/xuanwu/fluent-bit-plugin-loki:2.1.0-amd64"
                           sh "docker rmi registry.kyligence.io/xuanwu/nginx-unprivileged:1.19-alpine"
                         }
 
