@@ -111,7 +111,7 @@ spec:
                           sh "docker save -o  xuanwu-log-schedule.tar registry.kyligence.io/xuanwu/xuanwu-log:${tag_schedule}"
                           sh "docker save -o  xuanwu-log-api.tar registry.kyligence.io/xuanwu/xuanwu-log:${tag_api}"
                           sh "docker save -o  loki.tar registry.kyligence.io/xuanwu/loki:2.2.1"
-                          sh "docker save -o  fluent-bit.tar registry.kyligence.io/xuanwu/fluent-bit-plugin-loki:2.1.0-amd6"
+                          sh "docker save -o  fluent-bit.tar registry.kyligence.io/xuanwu/fluent-bit-plugin-loki:2.1.0-amd64"
                           sh "docker save -o  nginx.tar registry.kyligence.io/xuanwu/nginx-unprivileged:1.19-alpine"
 
                           def awscp = [:]
