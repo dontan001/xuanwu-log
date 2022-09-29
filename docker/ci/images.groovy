@@ -70,15 +70,15 @@ spec:
 
                           /*
                           sh "CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -o bin/xuanwu-backup ./cmd/schedule/main.go"
-                          sh "docker build -t registry.kyligence.io/xuanwu/xuanwu-log:${tag-schedule} -f docker/schedule/Dockerfile ."
+                          sh "docker build -t registry.kyligence.io/xuanwu/xuanwu-log:${tag_schedule} -f docker/schedule/Dockerfile ."
                           withDockerRegistry(credentialsId: 'registry-kyligence-io', url: 'https://registry.kyligence.io') {
-                            sh "docker push registry.kyligence.io/xuanwu/xuanwu-log:${tag-schedule}"
+                            sh "docker push registry.kyligence.io/xuanwu/xuanwu-log:${tag_schedule}"
                           }
 
                           sh "CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -o bin/xuanwu-api ./cmd/api/main.go"
-                          sh "docker build -t registry.kyligence.io/xuanwu/xuanwu-log:${tag-api} -f docker/api/Dockerfile ."
+                          sh "docker build -t registry.kyligence.io/xuanwu/xuanwu-log:${tag_api} -f docker/api/Dockerfile ."
                           withDockerRegistry(credentialsId: 'registry-kyligence-io', url: 'https://registry.kyligence.io') {
-                            sh "docker push registry.kyligence.io/xuanwu/xuanwu-log:${tag-api}"
+                            sh "docker push registry.kyligence.io/xuanwu/xuanwu-log:${tag_api}"
                           }
                           */
 
@@ -108,8 +108,8 @@ spec:
                             sh "docker push registry.kyligence.io/xuanwu/nginx-unprivileged:1.19-alpine"
                           }
 
-                          sh "docker save -o  xuanwu-log-schedule.tar registry.kyligence.io/xuanwu/xuanwu-log:${tag-schedule}"
-                          sh "docker save -o  xuanwu-log-api.tar registry.kyligence.io/xuanwu/xuanwu-log:${tag-api}"
+                          sh "docker save -o  xuanwu-log-schedule.tar registry.kyligence.io/xuanwu/xuanwu-log:${tag_schedule}"
+                          sh "docker save -o  xuanwu-log-api.tar registry.kyligence.io/xuanwu/xuanwu-log:${tag_api}"
                           sh "docker save -o  loki.tar registry.kyligence.io/xuanwu/loki:2.2.1"
                           sh "docker save -o  fluent-bit.tar registry.kyligence.io/xuanwu/fluent-bit-plugin-loki:2.1.0-amd6"
                           sh "docker save -o  nginx.tar registry.kyligence.io/xuanwu/nginx-unprivileged:1.19-alpine"
@@ -135,8 +135,8 @@ spec:
                           }
                           parallel awscp
 
-                          sh "docker rmi registry.kyligence.io/xuanwu/xuanwu-log:${tag-schedule}"
-                          sh "docker rmi registry.kyligence.io/xuanwu/xuanwu-log:${tag-api}"
+                          sh "docker rmi registry.kyligence.io/xuanwu/xuanwu-log:${tag_schedule}"
+                          sh "docker rmi registry.kyligence.io/xuanwu/xuanwu-log:${tag_api}"
                           sh "docker rmi registry.kyligence.io/xuanwu/loki:2.2.1"
                           sh "docker rmi registry.kyligence.io/xuanwu/fluent-bit-plugin-loki:2.1.0-amd64"
                           sh "docker rmi registry.kyligence.io/xuanwu/nginx-unprivileged:1.19-alpine"
