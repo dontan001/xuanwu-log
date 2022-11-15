@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
 	"time"
@@ -104,7 +105,12 @@ func Start(server *Server, backup *schedule.Backup) {
 	http.HandleFunc("/log/download", func(w http.ResponseWriter, req *http.Request) {
 		defer util.TimeMeasure("download")()
 
-		qry := req.URL.Query().Get("query")
+		qryRaw := req.URL.Query().Get("query")
+		qry, err := url.QueryUnescape(qryRaw)
+		if err != nil {
+			log.Fatalf("query unescape err: %s", err)
+		}
+
 		start := req.URL.Query().Get("start")
 		end := req.URL.Query().Get("end")
 		log.Printf("input: query=%s, start=%s, end=%s \n", qry, start, end)
