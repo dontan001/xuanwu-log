@@ -11,6 +11,8 @@ dd if=/dev/zero of=test/test50g.txt bs=1000000 count=50000
 ## How to make a http request
 ```shell
 curl 'http://localhost:8080/log/download?query=\{job="fluent-bit",app="yinglong"\}&start=now-6h&end=now' -o test/yinglong.zip
+// query encoded
+curl 'http://localhost:8080/log/download?query=%7Bjob%3D%22fluent-bit%22%2Capp%3D%22yinglong%22%7D&start=now-3h&end=now' -o test/yinglong.zip
 
 ```
 ```browser
